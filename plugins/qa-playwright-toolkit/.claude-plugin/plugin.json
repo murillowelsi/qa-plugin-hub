@@ -1,0 +1,11 @@
+{
+  "name": "qa-playwright-toolkit",
+  "description": "A complete Playwright automation toolkit for scaffolding projects, planning tests by exploring live apps, generating TypeScript test files with Page Object Model, and healing broken tests. Covers the full E2E automation workflow from project setup to test maintenance.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Murillo Welsi",
+    "email": "murillo.welsi@gmail.com"
+  },
+  "keywords": ["playwright", "e2e", "automation", "typescript", "page-object-model", "test-generation", "test-healing", "testing", "qa"],
+  "license": "MIT"
+}
