@@ -6,13 +6,12 @@
   },
   "metadata": {
     "description": "A curated collection of Claude Code skills and plugins for software engineering and QA workflows.",
-    "version": "1.0.0",
-    "pluginRoot": "./plugins"
+    "version": "1.0.0"
   },
   "plugins": [
     {
       "name": "qa-manual-toolkit",
-      "source": "./qa-manual-toolkit",
+      "source": "./plugins/qa-manual-toolkit",
       "description": "A complete QA toolkit for analyzing user stories, generating test cases, assessing risk, and exploring live applications. Covers the full manual testing workflow from story refinement to test execution prioritization.",
       "version": "1.0.0",
       "author": {
@@ -25,7 +24,7 @@
     },
     {
       "name": "qa-playwright-toolkit",
-      "source": "./qa-playwright-toolkit",
+      "source": "./plugins/qa-playwright-toolkit",
       "description": "A complete Playwright automation toolkit for scaffolding projects, planning tests by exploring live apps, generating TypeScript test files with Page Object Model, and healing broken tests. Covers the full E2E automation workflow from project setup to test maintenance.",
       "version": "1.0.0",
       "author": {
