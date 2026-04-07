@@ -206,29 +206,6 @@ export class ProjectsRequests {
 
 Add one class per resource (e.g. `TasksRequests`, `TeamRequests`) following the same pattern. The `api` fixture in `fixtures/api.ts` composes them.
 
-### `tests/auth.setup.ts`
-
-Runs once before all tests, logs in, and saves browser state. Use `fileURLToPath` to get an absolute path — this is required in ESM and prevents path resolution failures when tests are run from a different working directory (e.g. the project root):
-
-```ts
-import { test as setup } from '../fixtures';
-import { fileURLToPath } from 'url';
-import path from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const authFile = path.join(__dirname, '../playwright/.auth/user.json');
-
-setup('authenticate', async ({ loginPage, credentials }) => {
-  await loginPage.goto();
-  await loginPage.login(credentials.email, credentials.password);
-  await loginPage.page.waitForURL('/');
-  await loginPage.page.context().storageState({ path: authFile });
-});
-```
-
-Adapt `waitForURL` to the app's actual post-login URL.
-
 ## Step 4 — Configure playwright.config.ts
 
 Use **absolute paths** for both `dotenv` and `storageState` — paths resolved relative to `__dirname` are stable regardless of which directory `npm run test:e2e` is run from:
@@ -284,56 +261,7 @@ Add a test:e2e script to the root `package.json` so tests can be run from the pr
 }
 ```
 
-## Step 5 — Set up tsconfig.json
-
-**`e2e/tsconfig.json`** — covers the whole e2e project:
-
-```json
-{
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "CommonJS",
-    "moduleResolution": "node",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "baseUrl": "."
-  },
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules"]
-}
-```
-
-**`e2e/tests/tsconfig.json`** — picked up automatically by Playwright when running tests:
-
-```json
-{
-  "extends": "../tsconfig.json",
-  "compilerOptions": { "strict": true },
-  "include": ["**/*.ts", "../fixtures/**/*.ts", "../pages/**/*.ts", "../requests/**/*.ts"]
-}
-```
-
-## Step 6 — Create .mcp.json
-
-The Playwright MCP server must use the **same local `playwright` package** as the project — otherwise the test runner throws "did not expect test() to be called here".
-
-Create `e2e/.mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "playwright-test": {
-      "command": "./node_modules/.bin/playwright",
-      "args": ["run-test-mcp-server"]
-    }
-  }
-}
-```
-
-Using `./node_modules/.bin/playwright` guarantees the MCP server runs with the exact local copy.
-
-## Step 7 — Create .env and update .gitignore
+## Step 5 — Create .env and update .gitignore
 
 Create `e2e/.env`:
 
@@ -354,10 +282,9 @@ Add to the root `.gitignore`:
 
 `playwright/.auth/` contains session cookies — **never commit this directory**.
 
-## Step 8 — Verify the setup
+## Step 6 — Verify the setup
 
 ```bash
-npx tsc -p e2e/tsconfig.json --noEmit   # type-check
 npx playwright test --config e2e/playwright.config.ts --list  # confirm test discovery
 ```
 
