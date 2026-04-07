@@ -314,39 +314,7 @@ Add a test:e2e script to the root `package.json` so tests can be run from the pr
 }
 ```
 
-## Step 6 — Set up ESLint
-
-```bash
-cd e2e && npm install -D eslint eslint-plugin-playwright @typescript-eslint/parser @typescript-eslint/eslint-plugin
-```
-
-Create `e2e/eslint.config.mjs`:
-
-```js
-import playwright from 'eslint-plugin-playwright';
-import tsParser from '@typescript-eslint/parser';
-import tsPlugin from '@typescript-eslint/eslint-plugin';
-
-export default [
-  {
-    files: ['**/*.ts'],
-    languageOptions: { parser: tsParser, parserOptions: { project: './tsconfig.json' } },
-    plugins: { '@typescript-eslint': tsPlugin },
-    rules: { ...tsPlugin.configs.recommended.rules },
-  },
-  {
-    files: ['tests/**/*.ts'],
-    ...playwright.configs['flat/recommended'],
-    rules: {
-      ...playwright.configs['flat/recommended'].rules,
-      'playwright/no-wait-for-timeout': 'error',
-      'playwright/prefer-web-first-assertions': 'error',
-    },
-  },
-];
-```
-
-## Step 7 — Create .mcp.json
+## Step 6 — Create .mcp.json
 
 The Playwright MCP server must use the **same local `playwright` package** as the project — otherwise the test runner throws "did not expect test() to be called here".
 
@@ -365,7 +333,7 @@ Create `e2e/.mcp.json`:
 
 Using `./node_modules/.bin/playwright` guarantees the MCP server runs with the exact local copy.
 
-## Step 8 — Create .env and update .gitignore
+## Step 7 — Create .env and update .gitignore
 
 Create `e2e/.env`:
 
@@ -386,7 +354,7 @@ Add to the root `.gitignore`:
 
 `playwright/.auth/` contains session cookies — **never commit this directory**.
 
-## Step 9 — Verify the setup
+## Step 8 — Verify the setup
 
 ```bash
 npx tsc -p e2e/tsconfig.json --noEmit   # type-check
@@ -397,6 +365,8 @@ No tests yet is fine — `--list` should exit cleanly. Fix any errors before fin
 
 ## What NOT to do
 
+- Don't generate any test files during project init — the structure must be empty and ready for the user to add tests via `/playwright-test-generator`.
+- Don't install or configure ESLint — this skill only scaffolds the project structure.
 - Don't use `dotenv.config()` without an absolute path — it resolves from CWD, which breaks when `npm run test:e2e` is run from the project root instead of `e2e/`.
 - Don't use a relative `storageState` path in `playwright.config.ts` for the same reason.
 - Don't use `__dirname` directly in ESM files — use `fileURLToPath(import.meta.url)` first.
