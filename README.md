@@ -28,7 +28,8 @@ plugins/qa-story-pipeline/
     ├── ac-enricher/         ← step 3 standalone
     ├── risk-scorer/         ← step 4 standalone
     ├── testcase-builder/    ← step 5 standalone
-    └── story-refiner/       ← rescue skill (blocked stories)
+    ├── story-refiner/       ← rescue skill (blocked stories)
+    └── bug-reporter/        ← defect documentation → Jira
 ```
 
 ### How it works
@@ -114,6 +115,7 @@ Each skill is self-contained. Run individually or let `story-pipeline` chain the
 | `risk-scorer` | Scores functional areas by likelihood × impact. Produces a ranked risk matrix |
 | `testcase-builder` | Generates structured test cases ordered by risk priority |
 | `story-refiner` | Rewrites a blocked story to meet DoR. Shows rewrite for review before updating Jira |
+| `bug-reporter` | Creates a structured bug report from a description or Jira ticket, posts to Jira as comment or new issue |
 
 ### Usage
 
@@ -130,6 +132,10 @@ Each skill is self-contained. Run individually or let `story-pipeline` chain the
 
 # Fix a blocked story
 /story-refiner PROJ-123
+
+# Write a bug report
+/bug-reporter PROJ-123
+/bug-reporter  # or describe the bug in free text
 ```
 
 **Typical flow for a blocked story:**
