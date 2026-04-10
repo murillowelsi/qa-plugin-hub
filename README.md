@@ -4,18 +4,18 @@ A curated collection of Claude Code plugins for software engineering and QA work
 
 ## Plugins
 
-### qa-manual-toolkit
+### qa-story-pipeline
 
-A complete manual QA toolkit that guides you from story refinement to a prioritized, ready-to-execute test suite.
+An automated ISTQB-aligned story pipeline that chains story analysis, Definition of Ready enforcement, AC enrichment, risk scoring, and test case generation — all end-to-end without manual hand-holding.
 
 | Skill | Description |
 |---|---|
+| `story-pipeline` | Runs the full automated pipeline end-to-end: story analysis → DoR gate → AC enrichment → risk scoring → test case generation → Jira report |
 | `analyze-story` | Analyzes a Jira user story using ISTQB quality checks (INVEST, clarity, testability, AC quality) and produces a severity-rated report |
-| `generate-test-cases` | Derives positive, negative, edge case, and non-functional test cases from acceptance criteria |
-| `assess-risk` | Scores and ranks test cases by likelihood × impact to produce a phased execution order |
-| `explore-and-plan` | Explores a live web application in a real browser and produces a structured manual test plan |
-| `report-bug` | Structures a bug report from a failed test case and creates a Jira ticket with full reproduction steps |
-| `qa-orchestrator` | Autonomous pipeline that chains all phases end-to-end (story analysis → test generation → risk assessment → optional Playwright automation) for a given Jira ticket |
+| `dor-gatekeeper` | Enforces the Definition of Ready: reads the story analysis, applies DoR rules, and posts a PASS or BLOCK verdict to Jira |
+| `ac-enricher` | Rewrites raw acceptance criteria into structured Given/When/Then BDD scenarios, adding edge cases and negative paths |
+| `risk-scorer` | Scores each functional area by likelihood of failure × business impact and produces a ranked risk matrix |
+| `testcase-builder` | Generates structured test cases from enriched ACs and risk scores, covering positive, negative, boundary, and edge scenarios ordered by risk priority |
 
 ### qa-playwright-toolkit
 
@@ -44,10 +44,10 @@ claude plugin add https://raw.githubusercontent.com/murillowelsi/qa-plugin-hub/m
 
 ### Install a single plugin
 
-Install only the manual QA toolkit:
+Install only the story pipeline toolkit:
 
 ```bash
-claude plugin add https://raw.githubusercontent.com/murillowelsi/qa-plugin-hub/main/.claude-plugin/marketplace.json --plugin qa-manual-toolkit
+claude plugin add https://raw.githubusercontent.com/murillowelsi/qa-plugin-hub/main/.claude-plugin/marketplace.json --plugin qa-story-pipeline
 ```
 
 Install only the Playwright toolkit:
@@ -72,10 +72,10 @@ Once installed, skills are available as slash commands inside any Claude Code se
 ### Run the full QA pipeline for a Jira ticket
 
 ```
-/qa-orchestrator PROJ-123
+/story-pipeline PROJ-123
 ```
 
-This chains story analysis, test case generation, risk assessment, and optionally Playwright test generation — all without manual hand-holding.
+This chains story analysis, DoR enforcement, AC enrichment, risk scoring, and test case generation — all without manual hand-holding. A final report is posted back to Jira.
 
 ### Analyze a user story
 
@@ -83,25 +83,31 @@ This chains story analysis, test case generation, risk assessment, and optionall
 /analyze-story PROJ-123
 ```
 
+### Check Definition of Ready
+
+```
+/dor-gatekeeper PROJ-123
+```
+
+### Enrich acceptance criteria into BDD scenarios
+
+```
+/ac-enricher PROJ-123
+```
+
+### Score and rank risk
+
+```
+/risk-scorer
+```
+
 ### Generate test cases
 
 ```
-/generate-test-cases PROJ-123
+/testcase-builder
 ```
 
-### Assess risk and prioritize
-
-```
-/assess-risk
-```
-
-### Explore a live app and produce a test plan
-
-```
-/explore-and-plan https://your-app.com
-```
-
-### Plan and generate Playwright tests
+### Explore a live app and produce a Playwright test plan
 
 ```
 /test-planner https://your-app.com
@@ -119,19 +125,13 @@ This chains story analysis, test case generation, risk assessment, and optionall
 /test-healer
 ```
 
-### File a bug report to Jira
-
-```
-/report-bug
-```
-
 ---
 
 ## Prerequisites
 
 - [Claude Code](https://claude.ai/code) CLI installed
 - For Jira integration: Atlassian Rovo MCP configured in your Claude Code settings
-- For browser-based skills (`explore-and-plan`, `test-planner`): Playwright MCP configured in your Claude Code settings
+- For browser-based skills (`test-planner`): Playwright MCP configured in your Claude Code settings
 
 ---
 
