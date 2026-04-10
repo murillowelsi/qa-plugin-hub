@@ -219,4 +219,4 @@ MIT — see individual plugin directories for details.
 
 ## Author
 
-[Murillo Welsi](mailto:murillo.welsi@gmail.com)
+[Murillo Welsi](https://github.com/murillowelsi)
