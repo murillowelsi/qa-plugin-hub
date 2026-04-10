@@ -152,13 +152,14 @@ For each AC:
 3. **Add at least one edge case** — boundary values, empty states, concurrency, limits
 
 Format:
-```
+
 ### Scenario: [Short descriptive title]
 **Type**: Positive | Negative | Edge Case
-**Given** [precondition]
-**When** [action]
-**Then** [outcome]
-**And** [additional outcome if needed]
+```gherkin
+Given [precondition]
+When [action]
+Then [outcome]
+And [additional outcome if needed]
 ```
 
 Group scenarios under the original AC they derive from.

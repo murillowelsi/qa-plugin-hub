@@ -41,13 +41,14 @@ For each original acceptance criterion:
 Keep language precise but non-technical. No implementation details. Readable by a product owner, verifiable by a developer.
 
 **Scenario format**:
-```
+
 ### Scenario: [Short descriptive title]
 **Type**: Positive | Negative | Edge Case
-**Given** [initial context or precondition]
-**When** [the action the user or system takes]
-**Then** [the observable outcome]
-**And** [additional outcome, if needed]
+```gherkin
+Given [initial context or precondition]
+When [the action the user or system takes]
+Then [the observable outcome]
+And [additional outcome, if needed]
 ```
 
 Group scenarios under the original AC they derive from.

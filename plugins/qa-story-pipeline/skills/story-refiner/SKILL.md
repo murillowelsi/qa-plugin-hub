@@ -72,12 +72,12 @@ Rewrite every existing AC into Given/When/Then format. Then add the missing scen
 - Failure handling ACs
 
 Format (Jira wiki markup):
-```
-*AC #N — [Short label]*
 
-*Given* [precondition]
-*When* [action]
-*Then* [expected outcome]
+*AC #N — [Short label]*
+```gherkin
+Given [precondition]
+When [action]
+Then [expected outcome]
 ```
 
 ### Notes / Open Questions (optional)
