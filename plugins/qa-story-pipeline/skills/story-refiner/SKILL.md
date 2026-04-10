@@ -4,8 +4,8 @@ description: >
   Rewrites a blocked Jira user story to meet the Definition of Ready.
   Reads the DoR block verdict and analysis findings, generates a refined title,
   structured description, and complete Given/When/Then acceptance criteria that
-  address every failing rule and CRITICAL/HIGH finding, then updates the Jira
-  ticket directly.
+  address every failing rule and CRITICAL/HIGH finding. Shows the rewrite for
+  review before applying any changes to Jira.
   Use this skill when a story has been blocked by the DoR gate and the user
   wants to fix it, asks "refine this story", "fix the blocked story", "rewrite
   the ACs", "update the ticket", or "clean up this story".
@@ -13,7 +13,7 @@ description: >
 
 # Story Refiner
 
-You are running the **story-refiner** skill. Take a blocked Jira story and rewrite it to a production-quality standard, then apply the changes directly to Jira. Do all the work directly — no sub-agents.
+You are running the **story-refiner** skill. Take a blocked Jira story and rewrite it to a production-quality standard, present the rewrite for user review, and only apply changes to Jira after explicit approval. Do all the work directly — no sub-agents.
 
 ## Step 1 — Get the ticket key
 
@@ -85,7 +85,7 @@ If the analysis identified missing designs, dependencies, or open questions, lis
 
 **Quality bar**: every rewritten story must address all failing DoR rules and have zero CRITICAL findings if re-analyzed.
 
-## Step 5 — Save the refined story
+## Step 5 — Save and present the refined story for review
 
 Save to `qa-output/story-pipeline/<KEY>/refined-story.md`:
 
@@ -108,9 +108,32 @@ Save to `qa-output/story-pipeline/<KEY>/refined-story.md`:
 _Refined by QA Story Refiner on [date]. Addresses [N] CRITICAL and [N] HIGH findings._
 ```
 
-## Step 6 — Apply updates to Jira
+Then display the full refined content to the user — title, description, and all ACs — so they can read and evaluate it. Follow with a summary of what was changed:
 
-Update the ticket using the MCP tool:
+```
+📝 Refined story saved to qa-output/story-pipeline/[KEY]/refined-story.md
+
+Changes made:
+- Title: "[Old title]" → "[New title]"
+- Description: rewritten with user story format + out-of-scope section
+- ACs: X → Y (Z new added — list them briefly)
+- Findings addressed: [list CRITICAL and HIGH findings fixed]
+```
+
+**Stop here and ask the user for feedback before touching Jira:**
+
+> "Does this look good? You can:
+> - Reply **yes** to apply these changes to the Jira ticket
+> - Tell me what to change (e.g. 'reword AC #3', 'remove the out-of-scope section', 'add an AC for X')
+> - Reply **no** to discard"
+
+If the user requests changes, revise the content accordingly, update the saved file, and present the updated version again before asking for approval once more.
+
+Do NOT proceed to Step 6 until the user explicitly confirms with **yes** or equivalent approval.
+
+## Step 6 — Apply updates to Jira (only after approval)
+
+Once the user approves, update the ticket using the MCP tool:
 - `summary` → refined title
 - `description` → refined description + ACs combined (Jira wiki markup)
 
@@ -160,4 +183,6 @@ Re-run the pipeline to validate: /story-pipeline [KEY]
 
 - Rewrite only what the analysis and DoR verdict identify as wrong — preserve the original story's intent
 - Never use placeholders or vague language — the refined story must be immediately usable by a developer
+- **Never update Jira without explicit user approval** — always stop at Step 5 and wait for confirmation
+- If the user requests adjustments, revise the content and present it again before asking for approval
 - If the Jira update fails, save to disk and tell the user to copy-paste manually
