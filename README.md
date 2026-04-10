@@ -1,25 +1,151 @@
 # qa-plugin-hub
 
-A curated collection of Claude Code plugins for software engineering and QA workflows. This hub provides two toolkits that cover the full testing lifecycle — from story analysis and manual test design to Playwright E2E automation.
+A curated collection of Claude Code plugins for QA and software engineering workflows. Two toolkits covering the full testing lifecycle — from story analysis and manual test design to Playwright E2E automation.
+
+---
 
 ## Plugins
 
-### qa-story-pipeline
+- [qa-story-pipeline](#qa-story-pipeline) — automated ISTQB-aligned story pipeline
+- [qa-playwright-toolkit](#qa-playwright-toolkit) — Playwright E2E automation toolkit
 
-An automated ISTQB-aligned story pipeline that chains story analysis, Definition of Ready enforcement, AC enrichment, risk scoring, and test case generation — all end-to-end without manual hand-holding.
+---
+
+## qa-story-pipeline
+
+An automated pipeline that takes a raw Jira story and produces everything a QA team needs to start testing: analysis report, DoR verdict, enriched BDD scenarios, risk matrix, and prioritised test cases — all posted back to Jira.
+
+### Structure
+
+```
+plugins/qa-story-pipeline/
+├── .claude-plugin/
+│   └── plugin.json          ← name, version, author, keywords
+└── skills/
+    ├── story-pipeline/      ← 🎯 MAIN ENTRY POINT (run everything)
+    ├── story-analyzer/      ← step 1 standalone
+    ├── dor-gatekeeper/      ← step 2 standalone
+    ├── ac-enricher/         ← step 3 standalone
+    ├── risk-scorer/         ← step 4 standalone
+    ├── testcase-builder/    ← step 5 standalone
+    └── story-refiner/       ← rescue skill (blocked stories)
+```
+
+### How it works
+
+```
+  USER                   SKILL                        JIRA / DISK
+  ────                   ─────                        ───────────
+
+  /story-pipeline KEY
+        │
+        ▼
+  ┌───────────┐
+  │  [1/6]    │  fetch ticket ──────────────────────► Jira (read)
+  │  Analyze  │  INVEST + AC quality + testability
+  │           │  score 0–10, find CRITICALs          ► 01-analysis.md
+  └─────┬─────┘
+        │
+        ▼
+  ┌───────────┐
+  │  [2/6]    │  apply DoR rules                      ► dor-verdict.json
+  │  DoR Gate │  score ≥7, no CRITICALs, ≥2 ACs      ► Jira (comment)
+  └─────┬─────┘
+        │
+     PASS? ──── NO ──► 🚫 BLOCKED
+        │                    │
+        │              /story-refiner KEY
+        │              show rewrite → user approves
+        │              → update Jira → re-run pipeline
+        │ YES
+        ▼
+  ┌───────────┐
+  │  [3/6]    │  rewrite ACs into Given/When/Then
+  │  Enrich   │  + negative paths + edge cases        ► 02-enriched-ac.md
+  │  ACs      │
+  └─────┬─────┘
+        │
+        ▼
+  ┌───────────┐
+  │  [4/6]    │  group into functional areas
+  │  Risk     │  likelihood × impact = risk score      ► 03-risk-matrix.md
+  │  Scoring  │  HIGH ≥15 | MEDIUM 8–14 | LOW ≤7
+  └─────┬─────┘
+        │
+        ▼
+  ┌───────────┐
+  │  [5/6]    │  generate test cases
+  │  Test     │  HIGH areas first, descriptive titles  ► 04-test-cases.md
+  │  Cases    │  no TC-001 IDs, no Gherkin
+  └─────┬─────┘
+        │
+        ▼
+  ┌───────────┐
+  │  [6/6]    │  compile all metrics                   ► 05-pipeline-report.md
+  │  Report   │  post summary ──────────────────────── ► Jira (comment)
+  └───────────┘
+```
+
+### Output files
+
+Each pipeline run produces a folder per ticket:
+
+```
+qa-output/story-pipeline/<KEY>/
+├── 01-analysis.md          score, findings by severity
+├── dor-verdict.json        PASS / BLOCK + failing rules
+├── 02-enriched-ac.md       Given/When/Then scenarios (gherkin blocks)
+├── 03-risk-matrix.md       ranked risk areas
+├── 04-test-cases.md        prioritised test cases
+├── 05-pipeline-report.md   full summary
+└── refined-story.md        (only if /story-refiner was run)
+```
+
+### Skills
+
+Each skill is self-contained. Run individually or let `story-pipeline` chain them all.
 
 | Skill | Description |
 |---|---|
-| `story-pipeline` | Runs the full automated pipeline end-to-end: story analysis → DoR gate → AC enrichment → risk scoring → test case generation → Jira report |
-| `analyze-story` | Analyzes a Jira user story using ISTQB quality checks (INVEST, clarity, testability, AC quality) and produces a severity-rated report |
-| `dor-gatekeeper` | Enforces the Definition of Ready: reads the story analysis, applies DoR rules, and posts a PASS or BLOCK verdict to Jira |
-| `ac-enricher` | Rewrites raw acceptance criteria into structured Given/When/Then BDD scenarios, adding edge cases and negative paths |
-| `risk-scorer` | Scores each functional area by likelihood of failure × business impact and produces a ranked risk matrix |
-| `testcase-builder` | Generates structured test cases from enriched ACs and risk scores, covering positive, negative, boundary, and edge scenarios ordered by risk priority |
+| `story-pipeline` | Runs the full pipeline end-to-end — all 6 steps, no hand-holding |
+| `story-analyzer` | ISTQB analysis: INVEST criteria, AC quality, testability, completeness. Score 0–10 |
+| `dor-gatekeeper` | Enforces Definition of Ready. Posts PASS or BLOCK verdict to Jira |
+| `ac-enricher` | Rewrites ACs into Given/When/Then BDD scenarios with negative paths and edge cases |
+| `risk-scorer` | Scores functional areas by likelihood × impact. Produces a ranked risk matrix |
+| `testcase-builder` | Generates structured test cases ordered by risk priority |
+| `story-refiner` | Rewrites a blocked story to meet DoR. Shows rewrite for review before updating Jira |
 
-### qa-playwright-toolkit
+### Usage
+
+```
+# Run the full pipeline
+/story-pipeline PROJ-123
+
+# Run individual steps
+/story-analyzer PROJ-123
+/dor-gatekeeper PROJ-123
+/ac-enricher PROJ-123
+/risk-scorer PROJ-123
+/testcase-builder PROJ-123
+
+# Fix a blocked story
+/story-refiner PROJ-123
+```
+
+**Typical flow for a blocked story:**
+```
+/story-pipeline PROJ-123    → 🚫 BLOCKED at DoR gate
+/story-refiner PROJ-123     → review rewrite → approve → Jira updated
+/story-pipeline PROJ-123    → ✅ full pipeline completes
+```
+
+---
+
+## qa-playwright-toolkit
 
 A complete Playwright automation toolkit covering project setup, test planning, test generation, and test maintenance.
+
+### Skills
 
 | Skill | Description |
 |---|---|
@@ -28,15 +154,27 @@ A complete Playwright automation toolkit covering project setup, test planning, 
 | `test-generator` | Generates Playwright test files in TypeScript using the Page Object Model from a test plan |
 | `test-healer` | Debugs and fixes failing Playwright tests, diagnosing root causes from error output |
 
+### Usage
+
+```
+# Explore a live app and produce a test plan
+/test-planner https://your-app.com
+
+# Initialize a new Playwright project
+/project-init
+
+# Generate tests from a plan
+/test-generator
+
+# Fix failing tests
+/test-healer
+```
+
 ---
 
 ## Installation
 
-This hub is distributed as a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces#create-the-marketplace-file). You can install individual plugins or the entire hub.
-
 ### Install the full hub
-
-Point Claude Code at this repository's marketplace file:
 
 ```bash
 claude plugin add https://raw.githubusercontent.com/murillowelsi/qa-plugin-hub/main/.claude-plugin/marketplace.json
@@ -44,15 +182,11 @@ claude plugin add https://raw.githubusercontent.com/murillowelsi/qa-plugin-hub/m
 
 ### Install a single plugin
 
-Install only the story pipeline toolkit:
-
 ```bash
+# Story pipeline only
 claude plugin add https://raw.githubusercontent.com/murillowelsi/qa-plugin-hub/main/.claude-plugin/marketplace.json --plugin qa-story-pipeline
-```
 
-Install only the Playwright toolkit:
-
-```bash
+# Playwright toolkit only
 claude plugin add https://raw.githubusercontent.com/murillowelsi/qa-plugin-hub/main/.claude-plugin/marketplace.json --plugin qa-playwright-toolkit
 ```
 
@@ -65,73 +199,11 @@ claude plugin add ./qa-plugin-hub/.claude-plugin/marketplace.json
 
 ---
 
-## Usage
-
-Once installed, skills are available as slash commands inside any Claude Code session.
-
-### Run the full QA pipeline for a Jira ticket
-
-```
-/story-pipeline PROJ-123
-```
-
-This chains story analysis, DoR enforcement, AC enrichment, risk scoring, and test case generation — all without manual hand-holding. A final report is posted back to Jira.
-
-### Analyze a user story
-
-```
-/analyze-story PROJ-123
-```
-
-### Check Definition of Ready
-
-```
-/dor-gatekeeper PROJ-123
-```
-
-### Enrich acceptance criteria into BDD scenarios
-
-```
-/ac-enricher PROJ-123
-```
-
-### Score and rank risk
-
-```
-/risk-scorer
-```
-
-### Generate test cases
-
-```
-/testcase-builder
-```
-
-### Explore a live app and produce a Playwright test plan
-
-```
-/test-planner https://your-app.com
-```
-
-### Initialize a new Playwright project
-
-```
-/project-init
-```
-
-### Fix failing Playwright tests
-
-```
-/test-healer
-```
-
----
-
 ## Prerequisites
 
 - [Claude Code](https://claude.ai/code) CLI installed
-- For Jira integration: Atlassian Rovo MCP configured in your Claude Code settings
-- For browser-based skills (`test-planner`): Playwright MCP configured in your Claude Code settings
+- **Jira integration** (`story-pipeline`, `story-analyzer`, `dor-gatekeeper`, `story-refiner`): Atlassian Rovo MCP configured in Claude Code settings
+- **Browser-based skills** (`test-planner`): Playwright MCP configured in Claude Code settings
 
 ---
 
