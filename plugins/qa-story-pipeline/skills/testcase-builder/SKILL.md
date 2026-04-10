@@ -13,7 +13,7 @@ description: >
 
 # Test Case Builder
 
-You are running the **testcase-builder** skill. Your job is to generate a complete, prioritized set of test cases from enriched ACs and risk scores.
+You are running the **testcase-builder** skill. Generate a complete, prioritized set of test cases from enriched ACs and risk scores. Do all the work directly — no sub-agents.
 
 ## Step 1 — Get the ticket key
 
@@ -25,38 +25,73 @@ Look for both:
 - `qa-output/story-pipeline/<KEY>/02-enriched-ac.md`
 - `qa-output/story-pipeline/<KEY>/03-risk-matrix.md`
 
-If either is missing, tell the user which step to run first:
-- No enriched ACs → run `/ac-enricher [KEY]`
-- No risk matrix → run `/risk-scorer [KEY]`
+If either is missing:
+- No enriched ACs → tell the user to run `/ac-enricher [KEY]` first
+- No risk matrix → offer to proceed without risk prioritization, but recommend `/risk-scorer [KEY]` first for better results
 
-If only the enriched ACs exist (no risk matrix), offer to proceed without risk prioritization — but recommend running risk-scorer first for better results.
+Read both files now.
 
-## Step 3 — Spawn the testcase-builder agent
+## Step 3 — Generate test cases
 
-Delegate to the **testcase-builder** agent, passing:
-- The ticket key
-- Path to enriched ACs: `qa-output/story-pipeline/<KEY>/02-enriched-ac.md`
-- Path to risk matrix: `qa-output/story-pipeline/<KEY>/03-risk-matrix.md`
+Use the risk matrix to determine order — HIGH risk areas first, then MEDIUM, then LOW.
 
-The agent will:
-- Generate structured test cases ordered by risk priority (HIGH first)
+**Rules**:
+- No Gherkin (no Given/When/Then — that's for BDD scenarios, not test cases)
+- No TC-001 IDs — use descriptive titles that read like a sentence
+- Each title must stand alone: a reader should understand what is being verified from the title alone
 - Cover all HIGH risk areas with at least 2 test cases each
-- Use descriptive titles (no TC-001 IDs, no Gherkin)
-- Include Preconditions, Steps, Expected Result, and Type for each case
-- Save to `qa-output/story-pipeline/<KEY>/04-test-cases.md`
+- Cover MEDIUM areas with at least 1 test case each
+- LOW areas: 1 test case or note as lower priority
 
-## Step 4 — Present the results
+**Test case format**:
+```
+### [Descriptive title of what is being verified]
+**Type**: Positive | Negative | Boundary | Edge
+**Risk Area**: [Functional area from risk matrix]
+**Risk Level**: HIGH | MEDIUM | LOW
 
-Show a summary:
+**Preconditions**:
+- [What must be true before the test starts]
+
+**Steps**:
+1. [First action]
+2. [Second action]
+
+**Expected Result**:
+[What the system should do or display when steps are completed correctly]
+```
+
+## Step 4 — Save output
+
+Save to `qa-output/story-pipeline/<KEY>/04-test-cases.md`:
+
+```markdown
+# Test Cases — [TICKET-KEY]: [Story Title]
+
+## Summary
+- Total test cases: X
+- Positive: X | Negative: X | Boundary: X | Edge: X
+- HIGH risk coverage: X cases across Y areas
+- MEDIUM risk coverage: X cases across Y areas
+- LOW risk coverage: X cases across Y areas
+
+## Test Cases by Risk Area
+
+### [HIGH] [Area Name]
+[test cases...]
+
+### [MEDIUM] [Area Name]
+[test cases...]
+```
+
+## Step 5 — Present the results
+
+Show:
 - Total test cases generated
 - Breakdown by type (Positive / Negative / Boundary / Edge)
-- Breakdown by risk level (HIGH / MEDIUM / LOW)
+- Breakdown by risk level
 - Preview of the first 2 test cases
 
-## Step 5 — Suggest next steps
-
+Then suggest next steps:
 > "Test cases are ready at `qa-output/story-pipeline/[KEY]/04-test-cases.md`."
->
-> "You can now:
-> - Run `/story-pipeline [KEY]` to generate the full pipeline report and post it to Jira
-> - Or use the test cases directly in your test management tool"
+> "Run `/story-pipeline [KEY]` to compile the full pipeline report and post it to Jira."

@@ -12,7 +12,7 @@ description: >
 
 # DoR Gatekeeper
 
-You are running the **dor-gatekeeper** skill. Your job is to enforce the team's Definition of Ready on a Jira user story and communicate the verdict clearly.
+You are running the **dor-gatekeeper** skill. Enforce the team's Definition of Ready on a Jira user story and communicate the verdict to Jira. Do all the work directly — no sub-agents.
 
 ## Step 1 — Get the ticket key
 
@@ -22,30 +22,77 @@ If the user has not provided a Jira ticket key, ask for one now.
 
 Look for `qa-output/story-pipeline/<KEY>/01-analysis.md`.
 
-If it does not exist, the story has not been analyzed yet. Tell the user:
-> "I need to analyze this story before I can check the DoR. Run `/story-analyzer [KEY]` first, then come back here."
+If it does not exist:
+> "I need the story analysis before I can check the DoR. Run `/story-analyzer [KEY]` first, then come back here."
 
-Do not proceed without the analysis report.
+Do not proceed without the analysis report. Read it now.
 
-## Step 3 — Spawn the dor-gatekeeper agent
+## Step 3 — Apply DoR rules
 
-Delegate to the **dor-gatekeeper** agent, passing:
-- The ticket key
-- The path to the analysis report
+Apply the following rules in order. The story must pass ALL of them for a PASS verdict:
 
-The agent will:
-- Apply DoR rules (score ≥ 7, no CRITICAL findings, at least 2 ACs, estimable)
-- Post a structured comment to the Jira ticket (PASS or BLOCK with reasons)
-- Save the verdict to `qa-output/story-pipeline/<KEY>/dor-verdict.json`
+| Rule | Requirement |
+|---|---|
+| Score threshold | Overall readiness score must be ≥ 7/10 |
+| No CRITICAL findings | Zero CRITICAL severity findings allowed |
+| Minimum ACs | At least 2 acceptance criteria must be present and clear |
+| Estimable | Story must have enough information to be estimated |
+| Clear description | Story description must be present and understandable |
 
-## Step 4 — Present the verdict
+## Step 4 — Post verdict to Jira
 
-Display the verdict clearly:
+Post a comment to the Jira ticket using the MCP tool.
+
+**If PASS**:
+```
+✅ *Story approved for sprint — DoR met.*
+
+Readiness score: X/10
+All Definition of Ready criteria passed.
+
+_Reviewed by QA Story Pipeline on [date]_
+```
+
+**If BLOCK**:
+```
+🚫 *Story blocked from sprint — DoR not met.*
+
+Readiness score: X/10
+
+*Failing rules:*
+- ❌ [Rule name]: [Why it failed and what needs to be fixed]
+
+*Required actions before this story can enter sprint:*
+1. [Specific fix #1]
+2. [Specific fix #2]
+
+_Reviewed by QA Story Pipeline on [date]_
+```
+
+Be specific and actionable. The person reading the comment should know exactly what to fix without asking follow-up questions.
+
+## Step 5 — Save verdict
+
+Save to `qa-output/story-pipeline/<KEY>/dor-verdict.json`:
+
+```json
+{
+  "ticket": "PROJ-123",
+  "verdict": "PASS",
+  "score": 8.5,
+  "failing_rules": [],
+  "evaluated_on": "2026-04-10"
+}
+```
+
+For BLOCK, populate `failing_rules` with the names of the rules that failed.
+
+## Step 6 — Present the verdict
 
 **If PASS**:
 > "✅ Story [KEY] passed the DoR gate (score: X/10). The Jira ticket has been updated with the approval comment."
 > "Next step: run `/ac-enricher [KEY]` to rewrite the ACs into structured BDD scenarios."
 
 **If BLOCK**:
-> "🚫 Story [KEY] is blocked from the sprint. The following DoR rules failed: [list them]. The Jira ticket has been updated with the details and recommended fixes."
-> "Once the product owner addresses the issues, re-run `/story-analyzer [KEY]` and then `/dor-gatekeeper [KEY]` again."
+> "🚫 Story [KEY] is blocked from the sprint. Failing rules: [list]. The Jira ticket has been updated."
+> "Run `/story-refiner [KEY]` to automatically rewrite the story and fix all findings, then re-run `/dor-gatekeeper [KEY]`."

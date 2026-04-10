@@ -13,7 +13,7 @@ description: >
 
 # AC Enricher
 
-You are running the **ac-enricher** skill. Your job is to transform raw acceptance criteria into rich, structured BDD scenarios that cover the main path, negative paths, and edge cases.
+You are running the **ac-enricher** skill. Transform raw acceptance criteria into rich, structured BDD scenarios. Do all the work directly — no sub-agents.
 
 ## Step 1 — Get the ticket key
 
@@ -21,32 +21,53 @@ If the user has not provided a Jira ticket key, ask for one now.
 
 ## Step 2 — Check prerequisites
 
-**DoR verdict**: Look for `qa-output/story-pipeline/<KEY>/dor-verdict.json`.
+Look for `qa-output/story-pipeline/<KEY>/dor-verdict.json`.
 
-- If the file exists and verdict is `"BLOCK"`: warn the user that the story was blocked at the DoR gate, but offer to proceed anyway if they confirm.
-- If the file does not exist: inform the user that the DoR gate has not been run, and suggest running `/dor-gatekeeper [KEY]` first — but offer to proceed directly if they prefer.
+- If verdict is `"BLOCK"`: warn the user the story was blocked at DoR, but offer to proceed if they confirm.
+- If the file does not exist: inform the user the DoR gate hasn't been run, suggest `/dor-gatekeeper [KEY]` first — but offer to proceed directly if they prefer.
 
-## Step 3 — Spawn the ac-enricher agent
+## Step 3 — Fetch the story
 
-Delegate to the **ac-enricher** agent, passing:
-- The ticket key
-- The path to the analysis report (if it exists): `qa-output/story-pipeline/<KEY>/01-analysis.md`
+Fetch the full Jira story using the MCP tool to get the original acceptance criteria. Also read the analysis report at `qa-output/story-pipeline/<KEY>/01-analysis.md` if it exists, for context on known gaps.
 
-The agent will:
-- Fetch the original ACs from Jira
-- Rewrite each as a Given/When/Then scenario
-- Add at least one negative path and one edge case per AC
-- Save enriched scenarios to `qa-output/story-pipeline/<KEY>/02-enriched-ac.md`
+## Step 4 — Enrich the ACs
 
-## Step 4 — Present the results
+For each original acceptance criterion:
 
-Display a summary of what was generated:
+1. **Rewrite as Given/When/Then** — each scenario must be standalone and self-explanatory
+2. **Add at least one negative path** — what happens when input is wrong, missing, or invalid?
+3. **Add at least one edge case** — boundary values, empty states, concurrent actions, maximum limits
+
+Keep language precise but non-technical. No implementation details. Readable by a product owner, verifiable by a developer.
+
+**Scenario format**:
+```
+### Scenario: [Short descriptive title]
+**Type**: Positive | Negative | Edge Case
+**Given** [initial context or precondition]
+**When** [the action the user or system takes]
+**Then** [the observable outcome]
+**And** [additional outcome, if needed]
+```
+
+Group scenarios under the original AC they derive from.
+
+## Step 5 — Save output
+
+Save enriched ACs to `qa-output/story-pipeline/<KEY>/02-enriched-ac.md`.
+
+Structure:
+- Header with ticket key and story title
+- Each original AC as a section heading
+- Enriched scenarios nested under it
+
+## Step 6 — Present the results
+
+Display:
 - How many original ACs were found
-- How many scenarios were created in total (positive / negative / edge case)
-- Show a preview of the first 2–3 scenarios
+- Total scenarios created (positive / negative / edge case breakdown)
+- Preview of the first 2–3 scenarios
+- Where the full output was saved
 
-Then tell the user where the full output was saved.
-
-## Step 5 — Suggest next step
-
-> "Enriched ACs are ready. Next step: run `/risk-scorer [KEY]` to score each functional area by likelihood of failure and business impact, so we know where to focus testing."
+Then suggest next step:
+> "Enriched ACs are ready. Next step: run `/risk-scorer [KEY]` to score each functional area by likelihood of failure and business impact."
