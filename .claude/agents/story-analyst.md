@@ -1,5 +1,6 @@
 ---
 name: story-analyst
+color: blue
 description: ISTQB-trained analyst that evaluates a Jira user story for INVEST compliance, clarity, AC quality, and testability. Spawned by the story-pipeline orchestrator or by the story-analyzer skill. Returns a structured report with severity-rated findings and an overall readiness score (0–10).
 tools:
   - mcp__claude_ai_Atlassian__getJiraIssue

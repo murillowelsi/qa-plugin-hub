@@ -1,5 +1,6 @@
 ---
 name: testcase-builder
+color: purple
 description: Senior test designer that generates structured test cases from enriched ACs and risk scores. Covers positive, negative, boundary, and edge scenarios ordered by risk priority. Spawned by the story-pipeline orchestrator or the testcase-builder skill.
 tools:
   - Read

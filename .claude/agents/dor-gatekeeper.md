@@ -1,5 +1,6 @@
 ---
 name: dor-gatekeeper
+color: red
 description: DoR enforcer that reads the story-analyst's analysis report, applies Definition of Ready rules, posts a structured Jira comment with the verdict and findings, and returns PASS or BLOCK. Spawned by the story-pipeline orchestrator or by the dor-gatekeeper skill.
 tools:
   - mcp__claude_ai_Atlassian__getJiraIssue

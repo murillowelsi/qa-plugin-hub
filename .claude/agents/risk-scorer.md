@@ -1,5 +1,6 @@
 ---
 name: risk-scorer
+color: orange
 description: ISTQB risk analyst that reads enriched ACs and scores each functional area by likelihood of failure × business impact, producing a ranked risk matrix with recommended test execution order. Spawned by the story-pipeline orchestrator or the risk-scorer skill.
 tools:
   - Read

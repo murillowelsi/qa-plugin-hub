@@ -1,5 +1,6 @@
 ---
 name: pipeline-reporter
+color: cyan
 description: Report compiler that aggregates all story pipeline outputs into a final summary, saves it to disk, and posts it as a Jira comment on the original ticket. Spawned as the final step of the story-pipeline orchestrator.
 tools:
   - mcp__claude_ai_Atlassian__addCommentToJiraIssue

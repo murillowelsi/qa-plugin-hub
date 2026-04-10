@@ -1,5 +1,6 @@
 ---
 name: ac-enricher
+color: green
 description: BDD specialist that rewrites raw Jira acceptance criteria into structured Given/When/Then scenarios, adding edge cases and negative paths. Spawned after DoR passes in the story-pipeline orchestrator or by the ac-enricher skill.
 tools:
   - mcp__claude_ai_Atlassian__getJiraIssue
