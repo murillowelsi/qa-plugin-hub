@@ -6,20 +6,20 @@
   },
   "metadata": {
     "description": "A curated collection of Claude Code skills and plugins for software engineering and QA workflows.",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   "plugins": [
     {
-      "name": "qa-story-pipeline",
-      "source": "./plugins/qa-story-pipeline",
-      "description": "Automated ISTQB-aligned story pipeline: analyzes Jira stories, enforces Definition of Ready, enriches acceptance criteria into BDD scenarios, scores risk, and generates structured test cases — all chained end-to-end without user hand-holding.",
-      "version": "1.4.0",
+      "name": "qa-issue-pipeline",
+      "source": "./plugins/qa-issue-pipeline",
+      "description": "Automated ISTQB-aligned issue pipeline: analyzes Jira issues, enforces Definition of Ready, enriches acceptance criteria into BDD scenarios, scores risk, and generates structured test cases — all chained end-to-end without user hand-holding.",
+      "version": "2.0.0",
       "author": {
         "name": "Murillo Welsi",
         "email": "murillo.welsi@gmail.com"
       },
       "category": "quality-assurance",
-      "keywords": ["qa", "istqb", "story-pipeline", "dor", "bdd", "risk", "test-cases", "jira", "agile", "acceptance-criteria"],
+      "keywords": ["qa", "istqb", "issue-pipeline", "dor", "bdd", "risk", "test-cases", "jira", "agile", "acceptance-criteria"],
       "license": "MIT"
     },
     {
