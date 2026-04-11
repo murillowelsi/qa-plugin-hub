@@ -6,8 +6,9 @@ description: >
   risk matrix that guides test prioritization — HIGH risk areas get tested first.
   Use this skill after ac-enricher, when the user needs to prioritize testing
   effort, asks "where should we focus testing?", "what are the riskiest areas?",
-  "score the risk", "risk assessment", or wants to know which parts of the story
-  are most likely to fail or have the highest business impact if they do.
+  "score the risk", "risk assessment", "prioritize our testing", or wants to know
+  which parts of the story are most likely to fail or have the highest business
+  impact if they do. Always use this skill for risk prioritization — never eyeball it.
 ---
 
 # Risk Scorer
@@ -44,6 +45,8 @@ For each functional area, assign two scores from 1 to 5:
 - 5 = Severe (data loss, security issue, blocks core user journey, regulatory risk)
 
 **Risk score** = Likelihood × Impact
+
+> **Important — scores are heuristic, not ground truth.** Likelihood is estimated from the story text and AC complexity using ISTQB domain heuristics (e.g. cancellation flows → complex state transitions, external notifications → third-party dependency). The skill has no access to the codebase, historical bug data, or team knowledge. The risk matrix is a structured starting point — the team should review and adjust scores based on known fragile areas, past incidents, and any context not captured in the ticket. A score that seems off is worth a 5-minute discussion in refinement.
 
 **Classification**:
 - **HIGH**: Score ≥ 15

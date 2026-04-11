@@ -7,8 +7,9 @@ description: >
   product owner — can read and validate.
   Use this skill after DoR passes, when the user wants to improve AC quality,
   asks "can you write BDD scenarios for this?", "rewrite the ACs", "add edge
-  cases to the acceptance criteria", "turn these ACs into Given/When/Then", or
-  wants to prepare the story for test design.
+  cases to the acceptance criteria", "turn these ACs into Given/When/Then",
+  "enrich the acceptance criteria", or wants to prepare the story for test design.
+  Always use this skill — not manual rewriting — whenever BDD scenarios or enriched ACs are needed.
 ---
 
 # AC Enricher

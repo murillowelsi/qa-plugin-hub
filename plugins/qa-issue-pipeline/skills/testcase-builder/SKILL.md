@@ -94,4 +94,4 @@ Show:
 
 Then suggest next steps:
 > "Test cases are ready at `qa-output/issue-pipeline/[KEY]/04-test-cases.md`."
-> "Run `/issue-pipeline [KEY]` to compile the full pipeline report and post it to Jira."
+> "Next: run `/automation-planner [KEY]` to triage which test cases should become Playwright specs, API tests, or stay manual — before writing any automation."

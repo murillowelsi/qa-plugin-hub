@@ -5,9 +5,10 @@ description: >
   analysis report, applies DoR rules (score threshold, no CRITICAL findings,
   minimum ACs, estimability), posts a structured Jira comment with the verdict
   and actionable fixes, and returns PASS or BLOCK.
-  Use this skill after story-analyzer, when the user wants to gate a story before
+  Use this skill after issue-analyzer, when the user wants to gate a story before
   sprint entry, asks "is this story ready for the sprint?", "can we pull this in?",
-  "does this meet our DoR?", or wants to post a QA verdict to Jira.
+  "does this meet our DoR?", "check the definition of ready", or wants to post a QA verdict to Jira.
+  Always use this skill — not manual judgement — whenever a DoR check is needed.
 ---
 
 # DoR Gatekeeper
