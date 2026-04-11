@@ -20,10 +20,10 @@ If the user has not provided a Jira ticket key, ask for one now.
 
 ## Step 2 — Check for analysis report
 
-Look for `qa-output/story-pipeline/<KEY>/01-analysis.md`.
+Look for `qa-output/issue-pipeline/<KEY>/01-analysis.md`.
 
 If it does not exist:
-> "I need the story analysis before I can check the DoR. Run `/story-analyzer [KEY]` first, then come back here."
+> "I need the story analysis before I can check the DoR. Run `/issue-analyzer [KEY]` first, then come back here."
 
 Do not proceed without the analysis report. Read it now.
 
@@ -50,7 +50,7 @@ Post a comment to the Jira ticket using the MCP tool.
 Readiness score: X/10
 All Definition of Ready criteria passed.
 
-_Reviewed by QA Story Pipeline on [date]_
+_Reviewed by QA Issue Pipeline on [date]_
 ```
 
 **If BLOCK**:
@@ -66,14 +66,14 @@ Readiness score: X/10
 1. [Specific fix #1]
 2. [Specific fix #2]
 
-_Reviewed by QA Story Pipeline on [date]_
+_Reviewed by QA Issue Pipeline on [date]_
 ```
 
 Be specific and actionable. The person reading the comment should know exactly what to fix without asking follow-up questions.
 
 ## Step 5 — Save verdict
 
-Save to `qa-output/story-pipeline/<KEY>/dor-verdict.json`:
+Save to `qa-output/issue-pipeline/<KEY>/dor-verdict.json`:
 
 ```json
 {
@@ -95,4 +95,4 @@ For BLOCK, populate `failing_rules` with the names of the rules that failed.
 
 **If BLOCK**:
 > "🚫 Story [KEY] is blocked from the sprint. Failing rules: [list]. The Jira ticket has been updated."
-> "Run `/story-refiner [KEY]` to automatically rewrite the story and fix all findings, then re-run `/dor-gatekeeper [KEY]`."
+> "Run `/issue-refiner [KEY]` to automatically rewrite the story and fix all findings, then re-run `/dor-gatekeeper [KEY]`."

@@ -147,10 +147,10 @@ If no ticket exists, ask for the Jira project key and create a new issue using t
 After posting, suggest follow-up actions based on context:
 
 - If the bug reveals missing or ambiguous acceptance criteria on the related story:
-  > "This bug may point to a story quality problem. Run `/story-analyzer [KEY]` to review the ACs and testability of the parent story."
+  > "This bug may point to a story quality problem. Run `/issue-analyzer [KEY]` to review the ACs and testability of the parent story."
 
 - If the bug area needs regression coverage:
   > "Want to make sure this doesn't regress? Run `/testcase-builder [KEY]` to generate test cases for this functional area."
 
 - If this is part of a broader story pipeline:
-  > "You can also run `/story-pipeline [KEY]` to execute the full QA pipeline on the related story."
+  > "You can also run `/issue-pipeline [KEY]` to execute the full QA pipeline on the related story."

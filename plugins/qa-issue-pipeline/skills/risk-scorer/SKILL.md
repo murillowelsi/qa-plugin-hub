@@ -20,7 +20,7 @@ If the user has not provided a Jira ticket key, ask for one now.
 
 ## Step 2 — Check prerequisites
 
-Look for `qa-output/story-pipeline/<KEY>/02-enriched-ac.md`.
+Look for `qa-output/issue-pipeline/<KEY>/02-enriched-ac.md`.
 
 If it does not exist:
 > "I need enriched ACs before I can score risk. Run `/ac-enricher [KEY]` first."
@@ -52,7 +52,7 @@ For each functional area, assign two scores from 1 to 5:
 
 ## Step 4 — Save the risk matrix
 
-Save to `qa-output/story-pipeline/<KEY>/03-risk-matrix.md`:
+Save to `qa-output/issue-pipeline/<KEY>/03-risk-matrix.md`:
 
 ```markdown
 # Risk Matrix — [TICKET-KEY]: [Story Title]

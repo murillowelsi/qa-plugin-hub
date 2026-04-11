@@ -1,21 +1,21 @@
 ---
-name: story-pipeline
+name: issue-pipeline
 description: >
-  Runs the full automated story quality pipeline end-to-end without user
+  Runs the full automated issue quality pipeline end-to-end without user
   hand-holding: story analysis → DoR gate → AC enrichment → risk scoring →
   test case generation → pipeline report posted to Jira.
-  Use this skill whenever the user says "run the pipeline", "full story pipeline",
-  "process this story", "do everything for this ticket", "run QA on this story",
+  Use this skill whenever the user says "run the pipeline", "full issue pipeline", "full story pipeline",
+  "process this issue", "process this story", "do everything for this ticket", "run QA on this issue", "run QA on this story",
   or provides a ticket key and clearly wants the complete workflow executed
   automatically. Also trigger when the user asks to "analyze and generate test
   cases" or any phrase that implies running multiple pipeline steps together.
-  This is the main entry point for the story pipeline — prefer this over
+  This is the main entry point for the issue pipeline — prefer this over
   running individual skills one by one.
 ---
 
-# Story Pipeline — Full Inline Orchestrator
+# Issue Pipeline — Full Inline Orchestrator
 
-You are running the **story-pipeline** skill. Execute all 6 steps sequentially, inline, with no sub-agents. You have full MCP access — use it directly at every step that requires Jira interaction.
+You are running the **issue-pipeline** skill. Execute all 6 steps sequentially, inline, with no sub-agents. You have full MCP access — use it directly at every step that requires Jira interaction.
 
 ## Step 0 — Get the ticket key
 
@@ -54,7 +54,7 @@ Evaluate the story across every dimension below. Assign a severity rating to eac
 
 **Verdict:** ≥ 8 = Ready | 5–7 = Needs Refinement | < 5 = Not Ready
 
-Save the report to `qa-output/story-pipeline/<KEY>/01-analysis.md`:
+Save the report to `qa-output/issue-pipeline/<KEY>/01-analysis.md`:
 
 ```markdown
 # Story Analysis — [KEY]: [Story Title]
@@ -93,7 +93,7 @@ Apply these rules to the analysis report. The story must pass ALL of them:
 | Estimable | Enough information to size the story |
 | Clear description | Description present and understandable |
 
-Save the verdict to `qa-output/story-pipeline/<KEY>/dor-verdict.json`:
+Save the verdict to `qa-output/issue-pipeline/<KEY>/dor-verdict.json`:
 ```json
 {
   "ticket": "KEY",
@@ -113,7 +113,7 @@ Post a Jira comment using the MCP tool:
 Readiness score: X/10
 All Definition of Ready criteria passed.
 
-_Reviewed by QA Story Pipeline on [date]_
+_Reviewed by QA Issue Pipeline on [date]_
 ```
 
 **If BLOCK:**
@@ -128,13 +128,13 @@ Readiness score: X/10
 *Required actions:*
 1. [Specific fix]
 
-_Reviewed by QA Story Pipeline on [date]_
+_Reviewed by QA Issue Pipeline on [date]_
 ```
 
 **If BLOCK — stop the pipeline here.** Report:
 > `[2/6] DoR Gate — 🚫 BLOCKED`
 > "The story did not meet the Definition of Ready. The Jira ticket has been updated."
-> "Run `/story-refiner [KEY]` to automatically rewrite and fix all findings, then re-run `/story-pipeline [KEY]`."
+> "Run `/issue-refiner [KEY]` to automatically rewrite and fix all findings, then re-run `/issue-pipeline [KEY]`."
 
 Show the failing rules and stop.
 
@@ -164,7 +164,7 @@ And [additional outcome if needed]
 
 Group scenarios under the original AC they derive from.
 
-Save to `qa-output/story-pipeline/<KEY>/02-enriched-ac.md`.
+Save to `qa-output/issue-pipeline/<KEY>/02-enriched-ac.md`.
 
 Report: `[3/6] AC Enrichment — ✅ done (X scenarios: X positive, X negative, X edge)`
 
@@ -180,7 +180,7 @@ For each area score:
 - **Risk score** = Likelihood × Impact
 - **HIGH** ≥ 15 | **MEDIUM** 8–14 | **LOW** ≤ 7
 
-Save to `qa-output/story-pipeline/<KEY>/03-risk-matrix.md`:
+Save to `qa-output/issue-pipeline/<KEY>/03-risk-matrix.md`:
 
 ```markdown
 # Risk Matrix — [KEY]: [Story Title]
@@ -233,7 +233,7 @@ Format:
 [what the system should do]
 ```
 
-Save to `qa-output/story-pipeline/<KEY>/04-test-cases.md` with a summary table at the top.
+Save to `qa-output/issue-pipeline/<KEY>/04-test-cases.md` with a summary table at the top.
 
 Report: `[5/6] Test Cases — ✅ done (X cases generated)`
 
@@ -241,9 +241,9 @@ Report: `[5/6] Test Cases — ✅ done (X cases generated)`
 
 ## [6/6] Pipeline Report
 
-Read all output files from `qa-output/story-pipeline/<KEY>/`. Extract key metrics from each.
+Read all output files from `qa-output/issue-pipeline/<KEY>/`. Extract key metrics from each.
 
-Save to `qa-output/story-pipeline/<KEY>/05-pipeline-report.md`:
+Save to `qa-output/issue-pipeline/<KEY>/05-pipeline-report.md`:
 
 ```markdown
 # Pipeline Report — [KEY]: [Story Title]
@@ -269,7 +269,7 @@ Save to `qa-output/story-pipeline/<KEY>/05-pipeline-report.md`:
 
 Post a Jira comment using the MCP tool:
 ```
-📋 *QA Story Pipeline — Complete*
+📋 *QA Issue Pipeline — Complete*
 
 *Story Analysis*: X/10 — [verdict]
 *DoR Gate*: ✅ PASS
@@ -281,9 +281,9 @@ Post a Jira comment using the MCP tool:
 • [Area 1] — HIGH (Score: XX)
 • [Area 2] — HIGH (Score: XX)
 
-All outputs saved to qa-output/story-pipeline/[KEY]/
+All outputs saved to qa-output/issue-pipeline/[KEY]/
 
-_Run by QA Story Pipeline on [date]_
+_Run by QA Issue Pipeline on [date]_
 ```
 
 Report: `[6/6] Pipeline Report — ✅ done (Jira updated)`
@@ -296,7 +296,7 @@ Display the full pipeline summary table:
 
 ```
 ╔══════════════════════════════════════════════════════════╗
-║         QA Story Pipeline — [KEY]: [Story Title]         ║
+║         QA Issue Pipeline — [KEY]: [Story Title]         ║
 ╠══════════════╦═══════════════╦══════════════════════════╣
 ║ Step         ║ Status        ║ Result                   ║
 ╠══════════════╬═══════════════╬══════════════════════════╣
@@ -308,7 +308,7 @@ Display the full pipeline summary table:
 ║ Report       ║ ✅ Done       ║ Jira notified            ║
 ╚══════════════╩═══════════════╩══════════════════════════╝
 
-All outputs saved to: qa-output/story-pipeline/[KEY]/
+All outputs saved to: qa-output/issue-pipeline/[KEY]/
 ```
 
 ## Guiding principles

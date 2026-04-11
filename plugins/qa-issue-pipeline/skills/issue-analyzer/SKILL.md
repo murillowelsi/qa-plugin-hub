@@ -1,18 +1,18 @@
 ---
-name: story-analyzer
+name: issue-analyzer
 description: >
-  Analyzes a Jira user story using ISTQB-aligned quality checks — INVEST criteria,
+  Analyzes a Jira issue (story, bug, task, spike, subtask) using ISTQB-aligned quality checks — INVEST criteria,
   clarity, AC quality, testability, and completeness — then produces a structured
   report with severity-rated findings and an overall readiness score (0–10).
   Use this skill whenever the user provides a Jira ticket key and wants a quality
-  review, asks "is this story ready?", "can you check this ticket?", "review our
-  AC", "is this testable?", or wants to prepare a story for refinement or sprint
+  review, asks "is this issue ready?", "is this story ready?", "can you check this ticket?", "review our
+  AC", "is this testable?", or wants to prepare an issue for refinement or sprint
   planning. Trigger even if the user just pastes a ticket key with no extra context.
 ---
 
-# Story Analyzer
+# Issue Analyzer
 
-You are running the **story-analyzer** skill. Evaluate a Jira user story for quality and readiness using ISTQB-aligned criteria. Do all the work directly — no sub-agents.
+You are running the **issue-analyzer** skill. Evaluate a Jira issue for quality and readiness using ISTQB-aligned criteria. Do all the work directly — no sub-agents.
 
 ## Step 1 — Get the ticket key
 
@@ -76,7 +76,7 @@ Compute an overall readiness score from 0 to 10:
 
 ## Step 5 — Save the report
 
-Save to `qa-output/story-pipeline/<KEY>/01-analysis.md` using this structure:
+Save to `qa-output/issue-pipeline/<KEY>/01-analysis.md` using this structure:
 
 ```markdown
 # Story Analysis — [TICKET-KEY]: [Story Title]
@@ -116,7 +116,7 @@ Then guide the user:
   > "This story looks ready for the DoR gate. Run `/dor-gatekeeper [KEY]` to enforce the Definition of Ready and post the verdict to Jira."
 
 - If score **< 7 or has CRITICAL findings**:
-  > "This story needs refinement before it can enter the sprint. Run `/story-refiner [KEY]` to automatically rewrite it and fix the findings."
+  > "This story needs refinement before it can enter the sprint. Run `/issue-refiner [KEY]` to automatically rewrite it and fix the findings."
 
 - If the user wants the full pipeline:
-  > "You can also run `/story-pipeline [KEY]` to execute the full pipeline end-to-end."
+  > "You can also run `/issue-pipeline [KEY]` to execute the full pipeline end-to-end."

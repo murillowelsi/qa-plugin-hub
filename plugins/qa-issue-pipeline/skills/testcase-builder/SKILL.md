@@ -22,8 +22,8 @@ If the user has not provided a Jira ticket key, ask for one now.
 ## Step 2 — Check prerequisites
 
 Look for both:
-- `qa-output/story-pipeline/<KEY>/02-enriched-ac.md`
-- `qa-output/story-pipeline/<KEY>/03-risk-matrix.md`
+- `qa-output/issue-pipeline/<KEY>/02-enriched-ac.md`
+- `qa-output/issue-pipeline/<KEY>/03-risk-matrix.md`
 
 If either is missing:
 - No enriched ACs → tell the user to run `/ac-enricher [KEY]` first
@@ -63,7 +63,7 @@ Use the risk matrix to determine order — HIGH risk areas first, then MEDIUM, t
 
 ## Step 4 — Save output
 
-Save to `qa-output/story-pipeline/<KEY>/04-test-cases.md`:
+Save to `qa-output/issue-pipeline/<KEY>/04-test-cases.md`:
 
 ```markdown
 # Test Cases — [TICKET-KEY]: [Story Title]
@@ -93,5 +93,5 @@ Show:
 - Preview of the first 2 test cases
 
 Then suggest next steps:
-> "Test cases are ready at `qa-output/story-pipeline/[KEY]/04-test-cases.md`."
-> "Run `/story-pipeline [KEY]` to compile the full pipeline report and post it to Jira."
+> "Test cases are ready at `qa-output/issue-pipeline/[KEY]/04-test-cases.md`."
+> "Run `/issue-pipeline [KEY]` to compile the full pipeline report and post it to Jira."

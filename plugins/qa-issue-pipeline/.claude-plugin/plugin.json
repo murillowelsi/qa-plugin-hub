@@ -1,0 +1,11 @@
+{
+  "name": "qa-issue-pipeline",
+  "description": "Automated ISTQB-aligned issue pipeline: analyzes Jira issues (stories, bugs, tasks, spikes, subtasks), enforces DoR, enriches ACs, scores risk, and generates test cases.",
+  "version": "2.0.0",
+  "author": {
+    "name": "Murillo Welsi",
+    "email": "murillo.welsi@gmail.com"
+  },
+  "keywords": ["qa", "istqb", "issue-pipeline", "dor", "bdd", "risk", "test-cases", "jira"],
+  "license": "MIT"
+}

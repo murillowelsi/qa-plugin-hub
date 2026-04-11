@@ -1,19 +1,19 @@
 ---
-name: story-refiner
+name: issue-refiner
 description: >
-  Rewrites a blocked Jira user story to meet the Definition of Ready.
+  Rewrites a blocked Jira issue to meet the Definition of Ready.
   Reads the DoR block verdict and analysis findings, generates a refined title,
   structured description, and complete Given/When/Then acceptance criteria that
   address every failing rule and CRITICAL/HIGH finding. Shows the rewrite for
   review before applying any changes to Jira.
-  Use this skill when a story has been blocked by the DoR gate and the user
-  wants to fix it, asks "refine this story", "fix the blocked story", "rewrite
+  Use this skill when an issue has been blocked by the DoR gate and the user
+  wants to fix it, asks "refine this issue", "refine this story", "fix the blocked issue", "fix the blocked story", "rewrite
   the ACs", "update the ticket", or "clean up this story".
 ---
 
-# Story Refiner
+# Issue Refiner
 
-You are running the **story-refiner** skill. Take a blocked Jira story and rewrite it to a production-quality standard, present the rewrite for user review, and only apply changes to Jira after explicit approval. Do all the work directly — no sub-agents.
+You are running the **issue-refiner** skill. Take a blocked Jira issue and rewrite it to a production-quality standard, present the rewrite for user review, and only apply changes to Jira after explicit approval. Do all the work directly — no sub-agents.
 
 ## Step 1 — Get the ticket key
 
@@ -22,11 +22,11 @@ If the user has not provided a Jira ticket key, ask for one now.
 ## Step 2 — Load prior outputs
 
 Check for:
-- `qa-output/story-pipeline/<KEY>/01-analysis.md` (or `1-story-analysis.md`)
-- `qa-output/story-pipeline/<KEY>/dor-verdict.json`
+- `qa-output/issue-pipeline/<KEY>/01-analysis.md` (or `1-story-analysis.md`)
+- `qa-output/issue-pipeline/<KEY>/dor-verdict.json`
 
 If neither exists:
-> "This story hasn't been through the pipeline yet. Run `/story-pipeline [KEY]` first so I have the analysis and DoR verdict to work from."
+> "This story hasn't been through the pipeline yet. Run `/issue-pipeline [KEY]` first so I have the analysis and DoR verdict to work from."
 
 Read both files now.
 
@@ -87,7 +87,7 @@ If the analysis identified missing designs, dependencies, or open questions, lis
 
 ## Step 5 — Save and present the refined story for review
 
-Save to `qa-output/story-pipeline/<KEY>/refined-story.md`:
+Save to `qa-output/issue-pipeline/<KEY>/refined-story.md`:
 
 ```markdown
 # Refined Story — [TICKET-KEY]
@@ -105,13 +105,13 @@ Save to `qa-output/story-pipeline/<KEY>/refined-story.md`:
 [Optional — omit if empty]
 
 ---
-_Refined by QA Story Refiner on [date]. Addresses [N] CRITICAL and [N] HIGH findings._
+_Refined by QA Issue Refiner on [date]. Addresses [N] CRITICAL and [N] HIGH findings._
 ```
 
 Then display the full refined content to the user — title, description, and all ACs — so they can read and evaluate it. Follow with a summary of what was changed:
 
 ```
-📝 Refined story saved to qa-output/story-pipeline/[KEY]/refined-story.md
+📝 Refined story saved to qa-output/issue-pipeline/[KEY]/refined-story.md
 
 Changes made:
 - Title: "[Old title]" → "[New title]"
@@ -139,7 +139,7 @@ Once the user approves, update the ticket using the MCP tool:
 
 Then post a comment:
 ```
-✏️ *Story refined by QA Story Refiner.*
+✏️ *Story refined by QA Issue Refiner.*
 
 *Issues addressed:*
 - [Each CRITICAL and HIGH finding that was fixed]
@@ -150,9 +150,9 @@ Then post a comment:
 - ✅ Acceptance criteria rewritten in Given/When/Then format
 - ✅ [X] new edge case / negative path ACs added
 
-Next step: re-run */story-pipeline [KEY]* to validate the refined story.
+Next step: re-run */issue-pipeline [KEY]* to validate the refined story.
 
-_Applied by QA Story Pipeline on [date]_
+_Applied by QA Issue Pipeline on [date]_
 ```
 
 ## Step 7 — Final summary
@@ -174,9 +174,9 @@ Display to the user:
 ║ Comment posted        ║ ✅ Refinement log added           ║
 ╚═══════════════════════╩══════════════════════════════════╝
 
-Output saved to: qa-output/story-pipeline/[KEY]/refined-story.md
+Output saved to: qa-output/issue-pipeline/[KEY]/refined-story.md
 
-Re-run the pipeline to validate: /story-pipeline [KEY]
+Re-run the pipeline to validate: /issue-pipeline [KEY]
 ```
 
 ## Guiding principles

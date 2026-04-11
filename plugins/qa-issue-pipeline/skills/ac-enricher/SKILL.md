@@ -21,14 +21,14 @@ If the user has not provided a Jira ticket key, ask for one now.
 
 ## Step 2 — Check prerequisites
 
-Look for `qa-output/story-pipeline/<KEY>/dor-verdict.json`.
+Look for `qa-output/issue-pipeline/<KEY>/dor-verdict.json`.
 
 - If verdict is `"BLOCK"`: warn the user the story was blocked at DoR, but offer to proceed if they confirm.
 - If the file does not exist: inform the user the DoR gate hasn't been run, suggest `/dor-gatekeeper [KEY]` first — but offer to proceed directly if they prefer.
 
 ## Step 3 — Fetch the story
 
-Fetch the full Jira story using the MCP tool to get the original acceptance criteria. Also read the analysis report at `qa-output/story-pipeline/<KEY>/01-analysis.md` if it exists, for context on known gaps.
+Fetch the full Jira story using the MCP tool to get the original acceptance criteria. Also read the analysis report at `qa-output/issue-pipeline/<KEY>/01-analysis.md` if it exists, for context on known gaps.
 
 ## Step 4 — Enrich the ACs
 
@@ -55,7 +55,7 @@ Group scenarios under the original AC they derive from.
 
 ## Step 5 — Save output
 
-Save enriched ACs to `qa-output/story-pipeline/<KEY>/02-enriched-ac.md`.
+Save enriched ACs to `qa-output/issue-pipeline/<KEY>/02-enriched-ac.md`.
 
 Structure:
 - Header with ticket key and story title
