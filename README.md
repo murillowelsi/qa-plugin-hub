@@ -4,6 +4,56 @@ A curated collection of Claude Code plugins for QA and software engineering work
 
 ---
 
+## How the two plugins connect
+
+```
+  SDLC PHASE          PLUGIN                        SKILL
+  ─────────────────────────────────────────────────────────────────────────
+
+  BACKLOG             ┌──────────────────────┐
+  GROOMING     ──────▶│  qa-issue-pipeline   │  /issue-pipeline
+                      │                      │  /issue-analyzer
+                      │  Analyzes story,     │  /dor-gatekeeper
+                      │  enforces DoR,       │  /ac-enricher
+                      │  enriches ACs,       │  /risk-scorer
+                      │  scores risk,        │  /testcase-builder
+                      │  generates           │  /issue-refiner
+                      │  test cases          │  /bug-reporter
+                      └──────────┬───────────┘
+                                 │
+                           PASS? ┤ BLOCK? ──▶ /issue-refiner ──▶ re-run
+                                 │
+  ─────────────────────────────────────────── handoff ────────────────────
+                                 │
+  SPRINT               ┌─────────▼────────────┐
+  PLANNING      ──────▶│  qa-playwright-      │  /automation-planner
+                        │  toolkit             │
+                        │                      │  Triages test cases:
+                        │  Decides what to     │  AUTOMATE / API TEST /
+                        │  automate, scaffolds │  MANUAL / SKIP
+                        │  specs, heals        │
+                        │  broken tests,       │  /project-init
+                        │  audits coverage     │  /test-planner
+                        └──────────┬───────────┘  /test-generator
+                                   │              /test-healer
+  DEV / CI               [specs]   │              /coverage-auditor
+                    ───────────────┘
+                                   │
+                    ┌──────────────▼────────────┐
+                    │  playwright test (CI/CD)   │
+                    │  runs on every PR / merge  │
+                    └──────────────┬────────────┘
+                                   │
+                          pass? ───┤─── fail? ──▶ /test-healer
+                                   │
+  RELEASE              ┌───────────▼────────────┐
+                  ─────▶  /coverage-auditor      │  Are HIGH risk test cases
+                        │                        │  actually covered by specs?
+                        └────────────────────────┘
+```
+
+---
+
 ## Plugins
 
 - [qa-issue-pipeline](#qa-issue-pipeline) — automated ISTQB-aligned issue pipeline
@@ -149,31 +199,61 @@ Each skill is self-contained. Run individually or let `issue-pipeline` chain the
 
 ## qa-playwright-toolkit
 
-A complete Playwright automation toolkit covering project setup, test planning, test generation, and test maintenance.
+A complete Playwright automation toolkit covering automation planning, project setup, test planning, test generation, test maintenance, and coverage auditing. Connects directly with `qa-issue-pipeline` outputs to close the loop from story to spec.
+
+### How it connects to the pipeline
+
+```
+  /issue-pipeline output           /qa-playwright-toolkit input
+  ────────────────────────         ──────────────────────────────
+  04-test-cases.md       ────────▶  /automation-planner  (what to automate)
+  03-risk-matrix.md      ────────▶  /automation-planner  (priority order)
+  02-enriched-ac.md      ────────▶  /test-generator      (scenario structure)
+  automation-plan.md     ────────▶  /test-generator      (triage decisions)
+```
 
 ### Skills
 
 | Skill | Description |
 |---|---|
+| `automation-planner` | Fetches the Jira ticket + pipeline outputs and triages every test case: AUTOMATE / API TEST / MANUAL / SKIP. The handoff between pipeline and specs |
 | `project-init` | Scaffolds a new Playwright project with TypeScript, Page Object Model structure, and a ready-to-run config |
 | `test-planner` | Explores a live app in a real browser, produces a structured test plan, and optionally creates a Jira ticket and feature branch |
-| `test-generator` | Generates Playwright test files in TypeScript using the Page Object Model from a test plan |
+| `test-generator` | Generates Playwright test files in TypeScript using the Page Object Model from a test plan or automation plan |
 | `test-healer` | Debugs and fixes failing Playwright tests, diagnosing root causes from error output |
+| `coverage-auditor` | Cross-references all pipeline test cases against existing spec files to surface HIGH risk gaps and score coverage by risk level |
 
 ### Usage
 
 ```
-# Explore a live app and produce a test plan
-/test-planner https://your-app.com
+# Triage pipeline test cases into what to automate
+/automation-planner PROJ-123
 
 # Initialize a new Playwright project
 /project-init
 
-# Generate tests from a plan
+# Explore a live app and produce a test plan
+/test-planner https://your-app.com
+
+# Generate tests from a plan or automation plan
 /test-generator
 
 # Fix failing tests
 /test-healer
+
+# Audit automation coverage across all pipeline tickets
+/coverage-auditor
+
+# Audit coverage for a specific ticket
+/coverage-auditor PROJ-123
+```
+
+**Typical end-to-end flow:**
+```
+/issue-pipeline PROJ-123      → pipeline outputs in qa-output/issue-pipeline/PROJ-123/
+/automation-planner PROJ-123  → automation-plan.md: what to automate and why
+/test-generator               → Playwright specs scaffolded from automation plan
+/coverage-auditor PROJ-123    → verify HIGH risk gaps are covered
 ```
 
 ---
@@ -208,7 +288,7 @@ claude plugin add ./qa-plugin-hub/.claude-plugin/marketplace.json
 ## Prerequisites
 
 - [Claude Code](https://claude.ai/code) CLI installed
-- **Jira integration** (`issue-pipeline`, `issue-analyzer`, `dor-gatekeeper`, `issue-refiner`): Atlassian Rovo MCP configured in Claude Code settings
+- **Jira integration** (`issue-pipeline`, `issue-analyzer`, `dor-gatekeeper`, `issue-refiner`, `automation-planner`): Atlassian Rovo MCP configured in Claude Code settings
 - **Browser-based skills** (`test-planner`): Playwright MCP configured in Claude Code settings
 
 ---
