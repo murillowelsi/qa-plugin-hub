@@ -143,6 +143,27 @@ Save to `qa-output/sprint-quality/sprint-<N>/sprint-report.md`:
 
 [Prioritised action list — which tickets need what, most critical first]
 [Focus on blockers that affect the most tickets or highest-risk stories]
+
+---
+
+## Suggested Next Steps
+
+[Per-ticket command suggestions, grouped by action type. Only include groups that apply.]
+
+**Fix blocked tickets** (run the refiner to rewrite and fix each one):
+- `/issue-refiner KEY` — [one-line reason, e.g. "zero ACs, corrupted title"]
+
+**Reclassify unsupported types** (change type in Jira first, or let the refiner do it):
+- `/issue-refiner KEY` — [e.g. "Spike → Task, then rewrite"]
+
+**Re-run the pipeline on passing or near-passing tickets** (if any reached ≥ 7/10 but need enrichment):
+- `/issue-pipeline KEY` — [e.g. "score 8/10, ready for AC enrichment and test cases"]
+
+**Re-run the full sprint gate after fixes**:
+- `/sprint-quality-gate Sprint N`
 ```
 
-Display the full report in the conversation after saving it.
+After displaying the report, close with a short prompt like:
+> "All [N] tickets have been commented in Jira. The most impactful next step is [top action — e.g. 'fixing the missing ACs on PULSE-1, PULSE-2, and PULSE-4']. Run `/issue-refiner [KEY]` to start."
+
+Keep the suggestion concrete and actionable — name the specific ticket and command rather than giving generic advice.
