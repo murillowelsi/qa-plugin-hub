@@ -40,16 +40,19 @@ SDLC PHASE          PIPELINE STEP           PURPOSE
 BACKLOG             ┌─────────────────┐
 GROOMING     ──────▶│ 1. STORY        │  Scores the issue across INVEST,
                     │    ANALYSIS     │  clarity, AC quality, testability,
-                    └────────┬────────┘  and completeness. Flags gaps
-                             │           before the team wastes effort.
+                    └────────┬────────┘  completeness, and work item
+                             │           structure. Flags gaps before the
+                             │           team wastes effort.
                              ▼
 DEFINITION          ┌─────────────────┐
 OF READY     ──────▶│ 2. DoR GATE     │  Enforces entry criteria to sprint.
                     │                 │  BLOCKS stories that aren't ready.
                     └────────┬────────┘  Posts verdict to Jira automatically.
                              │
-                      PASS? ─┤─ BLOCK? ──▶ stop + notify + suggest fix
+                      PASS? ─┤─ BLOCK? ──▶ /issue-refiner ──▶ re-run pipeline
                              │
+                             │  TOO BIG? ─▶ /ticket-splitter
+                             │              propose split → approve → new tickets
                              ▼
 SPRINT              ┌─────────────────┐
 PLANNING     ──────▶│ 3. AC           │  Transforms vague ACs into structured
@@ -73,6 +76,16 @@ SPRINT REVIEW       ┌─────────────────┐
 / REPORTING  ──────▶│ 6. PIPELINE     │  Summarises all outputs and posts
                     │    REPORT       │  a full report to Jira.
                     └─────────────────┘
+```
+
+### Running across a full sprint
+
+Use `/sprint-quality-gate` to process every ticket in a sprint simultaneously. Stories and Epics receive all 6 pipeline steps; Bugs, Tasks, Spikes, and Sub-tasks receive a focused quality analysis. Each ticket gets its own Jira comment, and results are aggregated into a sprint readiness report.
+
+```
+/sprint-quality-gate 42     → all tickets processed in parallel
+                            → individual Jira comments per ticket
+                            → sprint readiness report with PASS / BLOCK counts
 ```
 
 ---
@@ -183,8 +196,11 @@ All outputs are saved to `qa-output/issue-pipeline/<KEY>/`:
 ## Running the Pipeline
 
 ```bash
-# Full pipeline (recommended)
+# Full pipeline for a single ticket (recommended)
 /issue-pipeline PROJ-123
+
+# Full pipeline across an entire sprint (all tickets in parallel)
+/sprint-quality-gate 42
 
 # Individual steps (standalone)
 /issue-analyzer PROJ-123
@@ -195,6 +211,9 @@ All outputs are saved to `qa-output/issue-pipeline/<KEY>/`:
 
 # If DoR blocks — rewrite the story automatically
 /issue-refiner PROJ-123
+
+# If the story is too large or fragmented — propose a split
+/ticket-splitter PROJ-123
 ```
 
 ---

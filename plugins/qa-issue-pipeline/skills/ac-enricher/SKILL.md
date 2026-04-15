@@ -10,6 +10,7 @@ description: >
   cases to the acceptance criteria", "turn these ACs into Given/When/Then",
   "enrich the acceptance criteria", or wants to prepare the story for test design.
   Always use this skill — not manual rewriting — whenever BDD scenarios or enriched ACs are needed.
+allowed-tools: Read, Write, mcp__*__getJiraIssue, mcp__*__getConfluencePage, mcp__*__addCommentToJiraIssue
 ---
 
 # AC Enricher

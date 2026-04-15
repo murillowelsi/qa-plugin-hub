@@ -9,6 +9,7 @@ description: >
   sprint entry, asks "is this story ready for the sprint?", "can we pull this in?",
   "does this meet our DoR?", "check the definition of ready", or wants to post a QA verdict to Jira.
   Always use this skill — not manual judgement — whenever a DoR check is needed.
+allowed-tools: Read, Write, mcp__*__getJiraIssue, mcp__*__addCommentToJiraIssue
 ---
 
 # DoR Gatekeeper

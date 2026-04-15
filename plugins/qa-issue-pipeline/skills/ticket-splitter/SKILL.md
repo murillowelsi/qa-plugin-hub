@@ -11,6 +11,7 @@ description: >
   "can you break this down?", "split this ticket", "decompose this story", "help me split this issue",
   or when issue-analyzer flags structural issues under dimension #8 (Work Item Structure & Estimation).
   Always use this skill instead of manually guessing how to split a ticket.
+allowed-tools: Read, Write, mcp__*__getJiraIssue, mcp__*__getConfluencePage, mcp__*__createJiraIssue, mcp__*__addCommentToJiraIssue
 ---
 
 # Ticket Splitter

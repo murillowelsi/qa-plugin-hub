@@ -3,6 +3,7 @@ name: project-init
 description: >
   Initialize a new Playwright project from scratch following best practices: TypeScript, Page Object Model (POM) folder structure inside an e2e/ directory (e2e/pages/, e2e/fixtures/, e2e/tests/), baseURL in e2e/playwright.config.ts, and a ready-to-use split fixture scaffold using mergeTests.
   Use this skill whenever the user wants to start a new Playwright project, set up Playwright in an existing repo, scaffold a test framework, or says something like "init playwright", "set up playwright", "create a playwright project", "npm init playwright", or "start playwright testing from scratch".
+allowed-tools: Bash, Read, Write, Edit
 ---
 
 # Playwright Project Init

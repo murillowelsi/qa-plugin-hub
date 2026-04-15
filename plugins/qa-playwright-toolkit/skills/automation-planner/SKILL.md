@@ -12,6 +12,7 @@ description: >
   decide what gets automated. Triggers on phrases like "plan automation for", "what
   should we automate from", "triage test cases for", "automation plan for PROJ-123",
   or "what do we automate from this ticket".
+allowed-tools: Read, Write, mcp__*__getJiraIssue, mcp__*__getConfluencePage, mcp__*__addCommentToJiraIssue
 ---
 
 # Automation Planner

@@ -3,6 +3,7 @@ name: coverage-auditor
 description: >
   Audits Playwright automation coverage against QA Issue Pipeline outputs. Scans all existing spec files in the repo and cross-references them against every test case produced by past pipeline runs. Identifies which HIGH and MEDIUM risk test cases never became a Playwright spec, scores overall coverage by risk level, and posts a gap report to Jira or saves it locally.
   Use this skill when the team wants to know how much of the pipeline output has actually been automated, or to identify coverage gaps before a release. Triggers on phrases like "check coverage", "what's not automated", "coverage audit", "audit test coverage", or "what test cases are missing specs".
+allowed-tools: Read, Write, Glob, Grep, mcp__*__addCommentToJiraIssue
 ---
 
 # Coverage Auditor

@@ -5,6 +5,7 @@ description: >
   quality using ISTQB-aligned criteria and posts findings as a structured Jira
   comment. Used by sprint-quality-gate for parallel sprint analysis of non-Story
   issue types. Returns a structured JSON summary on completion.
+color: green
 ---
 
 # Ticket Quality Checker

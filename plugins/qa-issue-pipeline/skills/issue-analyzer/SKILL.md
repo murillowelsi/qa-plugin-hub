@@ -8,6 +8,7 @@ description: >
   review, asks "is this issue ready?", "is this story ready?", "can you check this ticket?", "review our
   AC", "is this testable?", or wants to prepare an issue for refinement or sprint
   planning. Trigger even if the user just pastes a ticket key with no extra context.
+allowed-tools: Read, Write, mcp__*__getJiraIssue, mcp__*__getConfluencePage, mcp__*__getJiraIssueRemoteIssueLinks, mcp__*__searchJiraIssuesUsingJql
 ---
 
 # Issue Analyzer

@@ -12,6 +12,7 @@ description: >
   This is the main entry point for a single ticket — prefer this over running
   individual skills one by one. For running the pipeline across an entire sprint,
   use the sprint-quality-gate skill instead.
+allowed-tools: Read, Write, mcp__*__getJiraIssue, mcp__*__getConfluencePage, mcp__*__addCommentToJiraIssue, mcp__*__searchJiraIssuesUsingJql, mcp__*__getJiraIssueRemoteIssueLinks
 ---
 
 # Issue Pipeline — Orchestrator

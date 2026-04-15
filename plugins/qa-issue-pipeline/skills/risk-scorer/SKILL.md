@@ -9,6 +9,7 @@ description: >
   "score the risk", "risk assessment", "prioritize our testing", or wants to know
   which parts of the story are most likely to fail or have the highest business
   impact if they do. Always use this skill for risk prioritization — never eyeball it.
+allowed-tools: Read, Write, mcp__*__getJiraIssue
 ---
 
 # Risk Scorer

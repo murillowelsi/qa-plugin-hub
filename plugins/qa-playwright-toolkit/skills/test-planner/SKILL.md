@@ -1,6 +1,7 @@
 ---
 name: test-planner
 description: Create a comprehensive Playwright test plan for a web app or website by exploring it live in a browser, then optionally create a Jira ticket, create a feature branch, and generate the tests. Use this skill whenever the user wants to plan tests, create a test plan, explore an app for QA coverage, or figure out what scenarios to automate — even if they don't say "test plan" explicitly. Triggers on phrases like "plan tests for", "what should we test", "create test scenarios for", "explore and plan", or any URL/app that needs test coverage mapped out. Works with or without Jira.
+allowed-tools: Bash, Read, Write, Edit, mcp__*__getJiraIssue, mcp__*__createJiraIssue, mcp__*__addCommentToJiraIssue, mcp__*__getVisibleJiraProjects, mcp__*__*
 ---
 
 # Playwright Test Planner

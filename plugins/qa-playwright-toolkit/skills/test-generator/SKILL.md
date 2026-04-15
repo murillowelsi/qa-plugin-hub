@@ -1,6 +1,7 @@
 ---
 name: test-generator
 description: Generate Playwright test files in TypeScript using Page Object Model (POM) fixtures from a test plan. Use this skill whenever the user wants to generate, write, or create Playwright tests from a plan or scenario description. Triggers on phrases like "generate tests", "write tests for", "implement test plan", "create spec file", or when given a test plan item to automate. Also invoked automatically by the playwright-test-planner skill after a Jira ticket and feature branch have been created. Always use this skill instead of writing raw Playwright tests by hand.
+allowed-tools: Read, Write, Edit, mcp__*__*
 ---
 
 # Playwright Test Generator

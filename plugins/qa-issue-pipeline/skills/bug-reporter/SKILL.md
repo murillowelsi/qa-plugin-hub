@@ -9,6 +9,7 @@ description: >
   or tracked. Also trigger when the user pastes raw bug observations and wants them turned
   into a proper report, or when they ask "can you write this up as a bug?" — even without
   a Jira key. This is the go-to skill for any defect documentation workflow.
+allowed-tools: Read, Write, mcp__*__getJiraIssue, mcp__*__createJiraIssue, mcp__*__addCommentToJiraIssue, mcp__*__getJiraProjectIssueTypesMetadata
 ---
 
 # Bug Reporter

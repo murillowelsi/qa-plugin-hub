@@ -1,6 +1,7 @@
 ---
 name: test-healer
 description: Debug and fix failing Playwright tests. Use this skill whenever tests are failing, broken, or producing errors — even if the user just says "tests are broken", "fix the tests", "something's failing", or pastes an error message from a Playwright run. Always use this skill to heal tests rather than rewriting them from scratch.
+allowed-tools: Bash, Read, Write, Edit, mcp__*__*
 ---
 
 # Playwright Test Healer

@@ -6,6 +6,7 @@ description: >
   report. Posts Jira comments automatically without waiting for user approval.
   Used by sprint-quality-gate to process multiple tickets in parallel.
   Returns a structured JSON summary on completion.
+color: blue
 ---
 
 # Ticket Pipeline Worker

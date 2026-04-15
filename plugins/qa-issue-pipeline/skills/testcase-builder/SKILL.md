@@ -9,6 +9,7 @@ description: >
   suite", "what should we test?", or wants to turn acceptance criteria into
   executable test cases. Also trigger when the user wants to know how many tests
   to write or what to cover for a given ticket.
+allowed-tools: Read, Write, mcp__*__getJiraIssue, mcp__*__addCommentToJiraIssue
 ---
 
 # Test Case Builder

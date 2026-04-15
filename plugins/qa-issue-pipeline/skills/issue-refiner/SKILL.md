@@ -9,6 +9,7 @@ description: >
   Use this skill when an issue has been blocked by the DoR gate and the user
   wants to fix it, asks "refine this issue", "refine this story", "fix the blocked issue", "fix the blocked story", "rewrite
   the ACs", "update the ticket", or "clean up this story".
+allowed-tools: Read, Write, mcp__*__getJiraIssue, mcp__*__editJiraIssue, mcp__*__addCommentToJiraIssue
 ---
 
 # Issue Refiner

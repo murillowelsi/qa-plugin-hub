@@ -11,17 +11,21 @@ A curated collection of Claude Code plugins for QA and software engineering work
   ─────────────────────────────────────────────────────────────────────────
 
   BACKLOG             ┌──────────────────────┐
-  GROOMING     ──────▶│  qa-issue-pipeline   │  /issue-pipeline
-                      │                      │  /issue-analyzer
-                      │  Analyzes story,     │  /dor-gatekeeper
-                      │  enforces DoR,       │  /ac-enricher
-                      │  enriches ACs,       │  /risk-scorer
-                      │  scores risk,        │  /testcase-builder
-                      │  generates           │  /issue-refiner
-                      │  test cases          │  /bug-reporter
+  GROOMING     ──────▶│  qa-issue-pipeline   │  /issue-pipeline       ← single ticket
+                      │                      │  /sprint-quality-gate  ← full sprint
+                      │  Analyzes stories,   │  /issue-analyzer
+                      │  enforces DoR,       │  /dor-gatekeeper
+                      │  enriches ACs,       │  /ac-enricher
+                      │  scores risk,        │  /risk-scorer
+                      │  generates           │  /testcase-builder
+                      │  test cases          │  /issue-refiner
+                      │                      │  /ticket-splitter
+                      │                      │  /bug-reporter
                       └──────────┬───────────┘
                                  │
-                           PASS? ┤ BLOCK? ──▶ /issue-refiner ──▶ re-run
+                    PASS? ───────┤
+                                 │  BLOCK? ──▶ /issue-refiner ──▶ re-run
+                                 │  TOO BIG? ─▶ /ticket-splitter
                                  │
   ─────────────────────────────────────────── handoff ────────────────────
                                   │
@@ -70,16 +74,18 @@ An automated pipeline that takes a raw Jira story and produces everything a QA t
 ```
 plugins/qa-issue-pipeline/
 ├── .claude-plugin/
-│   └── plugin.json          ← name, version, author, keywords
+│   └── plugin.json           ← name, version, author, keywords
 └── skills/
-    ├── issue-pipeline/      ← 🎯 MAIN ENTRY POINT (run everything)
-    ├── issue-analyzer/      ← step 1 standalone
-    ├── dor-gatekeeper/      ← step 2 standalone
-    ├── ac-enricher/         ← step 3 standalone
-    ├── risk-scorer/         ← step 4 standalone
-    ├── testcase-builder/    ← step 5 standalone
-    ├── issue-refiner/       ← rescue skill (blocked stories)
-    └── bug-reporter/        ← defect documentation → Jira
+    ├── issue-pipeline/       ← 🎯 MAIN ENTRY POINT (single ticket)
+    ├── sprint-quality-gate/  ← 🎯 SPRINT ENTRY POINT (all tickets in parallel)
+    ├── issue-analyzer/       ← step 1 standalone
+    ├── dor-gatekeeper/       ← step 2 standalone
+    ├── ac-enricher/          ← step 3 standalone
+    ├── risk-scorer/          ← step 4 standalone
+    ├── testcase-builder/     ← step 5 standalone
+    ├── issue-refiner/        ← rescue skill (blocked stories)
+    ├── ticket-splitter/      ← rescue skill (oversized/fragmented tickets)
+    └── bug-reporter/         ← defect documentation → Jira
 ```
 
 ### How it works
@@ -158,20 +164,25 @@ Each skill is self-contained. Run individually or let `issue-pipeline` chain the
 
 | Skill | Description |
 |---|---|
-| `issue-pipeline` | Runs the full pipeline end-to-end — all 6 steps, no hand-holding |
+| `issue-pipeline` | Runs the full pipeline end-to-end for a single ticket — all 6 steps, no hand-holding |
+| `sprint-quality-gate` | Runs the full pipeline across every ticket in a sprint in parallel. Stories/Epics get all 6 steps; Bugs, Tasks, Spikes, and Sub-tasks get a focused quality check |
 | `issue-analyzer` | ISTQB analysis: INVEST criteria, AC quality, testability, completeness. Score 0–10 |
 | `dor-gatekeeper` | Enforces Definition of Ready. Posts PASS or BLOCK verdict to Jira |
 | `ac-enricher` | Rewrites ACs into Given/When/Then BDD scenarios with negative paths and edge cases |
 | `risk-scorer` | Scores functional areas by likelihood × impact. Produces a ranked risk matrix |
 | `testcase-builder` | Generates structured test cases ordered by risk priority |
 | `issue-refiner` | Rewrites a blocked story to meet DoR. Shows rewrite for review before updating Jira |
+| `ticket-splitter` | Decomposes oversized or fragmented tickets into smaller, independently releasable stories |
 | `bug-reporter` | Creates a structured bug report from a description or Jira ticket, posts to Jira as comment or new issue |
 
 ### Usage
 
 ```
-# Run the full pipeline
+# Run the full pipeline for a single ticket
 /issue-pipeline PROJ-123
+
+# Run the pipeline across an entire sprint
+/sprint-quality-gate 42
 
 # Run individual steps
 /issue-analyzer PROJ-123
@@ -183,6 +194,9 @@ Each skill is self-contained. Run individually or let `issue-pipeline` chain the
 # Fix a blocked story
 /issue-refiner PROJ-123
 
+# Split an oversized or fragmented ticket
+/ticket-splitter PROJ-123
+
 # Write a bug report
 /bug-reporter PROJ-123
 /bug-reporter  # or describe the bug in free text
@@ -193,6 +207,17 @@ Each skill is self-contained. Run individually or let `issue-pipeline` chain the
 /issue-pipeline PROJ-123    → 🚫 BLOCKED at DoR gate
 /issue-refiner PROJ-123     → review rewrite → approve → Jira updated
 /issue-pipeline PROJ-123    → ✅ full pipeline completes
+```
+
+**Typical flow for an oversized story:**
+```
+/issue-pipeline PROJ-123    → analysis flags dimension #8 (Work Item Structure)
+/ticket-splitter PROJ-123   → proposed split into N smaller stories → approve
+```
+
+**Typical flow for a sprint:**
+```
+/sprint-quality-gate 42     → all tickets processed in parallel → sprint readiness report
 ```
 
 ---

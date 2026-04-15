@@ -11,6 +11,7 @@ description: >
   Trigger on: "check sprint N", "run quality gate on sprint", "analyze sprint N",
   "is sprint N ready", "run the pipeline on all sprint tickets", "sprint quality check",
   "sprint readiness report".
+allowed-tools: Read, Write, mcp__*__searchJiraIssuesUsingJql, mcp__*__getJiraIssue, mcp__*__addCommentToJiraIssue
 ---
 
 # Sprint Quality Gate
