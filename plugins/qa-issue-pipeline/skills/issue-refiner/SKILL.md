@@ -9,7 +9,7 @@ description: >
   Use this skill when an issue has been blocked by the DoR gate and the user
   wants to fix it, asks "refine this issue", "refine this story", "fix the blocked issue", "fix the blocked story", "rewrite
   the ACs", "update the ticket", or "clean up this story".
-allowed-tools: Read, Write, mcp__*__getJiraIssue, mcp__*__editJiraIssue, mcp__*__addCommentToJiraIssue
+allowed-tools: Read, Write, mcp__*__getJiraIssue, mcp__*__editJiraIssue, mcp__*__addCommentToJiraIssue, mcp__*__getJiraProjectIssueTypesMetadata
 ---
 
 # Issue Refiner
@@ -51,7 +51,9 @@ If the type is anything else, do not rewrite the ticket. Instead, read the title
 - **Epic** → should be decomposed into **User Stories** first, then each story refined individually
 - **Any other type** → recommend the closest match (Story, Bug, or Task) based on the content
 
-Respond with:
+For **Sub-task** and **Epic**, these cannot be directly reclassified without broader implications. Respond with the type violation message (see below) and stop — do not offer to fix in Jira.
+
+For **Spike** and other single-reclassifiable types, present the violation and offer to fix it:
 
 > "**Issue Type Violation — [KEY]: [Title]**
 >
@@ -61,9 +63,15 @@ Respond with:
 > **Recommended reclassification: [Suggested type]**
 > Reason: [1–2 sentences explaining why, based on the ticket's actual content]
 >
-> To proceed: change the issue type in Jira to [Suggested type], then re-run `/issue-refiner [KEY]`."
+> Would you like me to update the issue type to **[Suggested type]** in Jira now and continue with the refinement?"
 
-Stop here. Do not rewrite, save files, or update Jira for unsupported types.
+If the user confirms (yes / go ahead / do it / etc.):
+1. Use `getJiraProjectIssueTypesMetadata` to find the correct issue type ID for the suggested type in this project.
+2. Use `editJiraIssue` to update the `issuetype` field to the found ID.
+3. Confirm the update: "Issue type updated to [Suggested type]. Continuing with refinement..."
+4. Proceed to Step 4 as normal.
+
+If the user declines or does not respond affirmatively, stop here and do not rewrite, save files, or update Jira.
 
 ## Step 4 — Rewrite the story
 
