@@ -2,20 +2,32 @@
 name: bug-reporter
 description: >
   Creates a complete, structured bug report from a bug description or Jira ticket,
-  then posts it as a Jira comment or creates a new Jira bug issue.
-  Use this skill whenever the user says "write a bug report", "create a bug report for",
-  "log this bug", "I found a bug", "document this defect", "file a bug",
-  "report a bug on [KEY]", or describes a defect and wants it documented or tracked.
-  Also trigger when the user pastes raw bug observations and wants them turned into a
-  proper report, or when they ask "can you write this up as a bug?" — even without
+  then posts it as a Jira comment or creates a new Jira issue (Bug or Task depending
+  on where the defect was found). Use this skill whenever the user says "write a bug report",
+  "create a bug report for", "log this bug", "I found a bug", "document this defect",
+  "file a bug", "report a bug on [KEY]", or describes a defect and wants it documented
+  or tracked. Also trigger when the user pastes raw bug observations and wants them turned
+  into a proper report, or when they ask "can you write this up as a bug?" — even without
   a Jira key. This is the go-to skill for any defect documentation workflow.
 ---
 
 # Bug Reporter
 
-You are running the **bug-reporter** skill. Produce a complete, structured bug report and post it to Jira (as a comment on an existing ticket, or as a new bug issue). Do all the work directly — no sub-agents.
+You are running the **bug-reporter** skill. Produce a complete, structured bug report and post it to Jira (as a comment on an existing ticket, or as a new issue). Do all the work directly — no sub-agents.
 
-## Step 1 — Collect the bug information
+## Step 1 — Determine the issue type
+
+Before anything else, ask the user:
+
+> "Was this issue found in **production**?"
+
+Based on the answer, set the issue type for this report:
+- **Yes** → issue type: **Bug**
+- **No** (found in development, testing, or staging) → issue type: **Task**
+
+The report format is identical regardless of type. The issue type only affects how the Jira ticket is created in Step 6.
+
+## Step 2 — Collect the bug information
 
 Two input modes:
 
@@ -31,7 +43,7 @@ After extracting what you have, check for mandatory fields. If either is missing
 
 For optional fields (environment, root cause, priority), ask in a single prompt and accept "unknown" or a skip as a valid answer. Don't block progress on optional fields.
 
-## Step 2 — Build the structured report
+## Step 3 — Build the structured report
 
 Construct the full bug report using this template:
 
@@ -77,7 +89,7 @@ Construct the full bug report using this template:
 
 **Writing good summaries**: The summary should be one line, specific, and self-explanatory. Bad: "Login doesn't work". Good: "Login fails with 500 error when password contains special characters on Chrome 123".
 
-## Step 3 — Assess severity and priority
+## Step 4 — Assess severity and priority
 
 Suggest severity and priority based on the bug description, using these ISTQB-aligned definitions:
 
@@ -97,19 +109,16 @@ Suggest severity and priority based on the bug description, using these ISTQB-al
 
 Show your severity/priority recommendation with a one-sentence rationale, then ask the user to confirm or override before posting to Jira.
 
-## Step 4 — Save locally
+## Step 5 — Save locally
 
 Always save a local copy before posting to Jira:
 `qa-output/bug-reports/<KEY-or-slug>/bug-report.md`
 
 Use the ticket key if available. If not, derive a short slug from the summary (e.g., `login-500-special-chars`).
 
-## Step 5 — Post to Jira
+## Step 6 — Preview and post to Jira
 
-Ask the user which action they want:
-
-**Option A — Post as comment on existing ticket**
-Post the following formatted comment using the Jira MCP tool:
+First, format the full Jira content and display it to the user for review:
 
 ```
 🐛 *Bug Report*
@@ -135,14 +144,27 @@ Post the following formatted comment using the Jira MCP tool:
 _Reported by QA Bug Reporter on [date]_
 ```
 
-**Option B — Create a new Jira bug issue**
-If no ticket exists, ask for the Jira project key and create a new issue using the Jira MCP tool with:
-- Issue type: Bug
+Then ask:
+
+> "Does this look correct? Choose how to post it:
+> - **A** — Add as a comment on an existing ticket (provide the key)
+> - **B** — Create a new Jira issue (provide the project key) — will be created as **[Bug/Task]**
+> - **edit** — Tell me what to change first
+> - **skip** — Save locally only, don't post to Jira"
+
+**Do not post anything to Jira until the user explicitly confirms.** If the user requests changes, revise the content and show it again before asking.
+
+Once confirmed, execute the chosen option using the Jira MCP tool:
+
+**Option A** — Post the formatted comment on the specified ticket.
+
+**Option B** — Create a new issue with:
+- Issue type: **Bug** or **Task** — as determined in Step 1 (production → Bug, pre-production → Task)
 - Summary: the one-line bug summary
 - Description: the full structured report in Jira markup
-- Priority: as determined in Step 3
+- Priority: as determined in Step 4
 
-## Step 6 — Present next steps
+## Step 7 — Present next steps
 
 After posting, suggest follow-up actions based on context:
 

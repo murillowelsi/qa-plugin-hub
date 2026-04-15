@@ -39,10 +39,11 @@ Apply the following rules in order. The story must pass ALL of them for a PASS v
 | Minimum ACs | At least 2 acceptance criteria must be present and clear |
 | Estimable | Story must have enough information to be estimated |
 | Clear description | Story description must be present and understandable |
+| Work item structure | Ticket must represent independently deliverable value. No HIGH findings on technical-layer fragmentation, subtask misclassification, or estimation at the wrong level. |
 
-## Step 4 — Post verdict to Jira
+## Step 4 — Preview and confirm before posting to Jira
 
-Post a comment to the Jira ticket using the MCP tool.
+Format the verdict comment as shown below, then display it to the user in full and ask for approval before posting anything.
 
 **If PASS**:
 ```
@@ -72,7 +73,17 @@ _Reviewed by QA Issue Pipeline on [date]_
 
 Be specific and actionable. The person reading the comment should know exactly what to fix without asking follow-up questions.
 
-## Step 5 — Save verdict
+After formatting the comment, show it to the user and ask:
+
+> "Here is the comment that will be posted to [KEY]. Approve to post, tell me what to change, or reply **skip** to not post to Jira."
+
+**Do not post to Jira until the user explicitly approves.** If the user requests changes, revise the comment and ask again.
+
+## Step 5 — Post to Jira (only after approval)
+
+Once the user approves, post the comment using the Jira MCP tool.
+
+## Step 6 — Save verdict
 
 Save to `qa-output/issue-pipeline/<KEY>/dor-verdict.json`:
 
@@ -88,7 +99,7 @@ Save to `qa-output/issue-pipeline/<KEY>/dor-verdict.json`:
 
 For BLOCK, populate `failing_rules` with the names of the rules that failed.
 
-## Step 6 — Present the verdict
+## Step 7 — Present the verdict
 
 **If PASS**:
 > "✅ Story [KEY] passed the DoR gate (score: X/10). The Jira ticket has been updated with the approval comment."
