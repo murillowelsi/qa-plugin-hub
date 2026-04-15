@@ -95,4 +95,4 @@ Show:
 
 Then suggest next steps:
 > "Test cases are ready at `qa-output/issue-pipeline/[KEY]/04-test-cases.md`."
-> "Next: run `/automation-planner [KEY]` to triage which test cases should become Playwright specs, API tests, or stay manual — before writing any automation."
+> "Next: review each HIGH-risk test case and decide which should be automated (Playwright / API) vs. kept manual. As a rule of thumb: automate regression tests on stable flows, keep exploratory and edge-case tests manual."

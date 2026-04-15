@@ -210,9 +210,12 @@ Display to the user:
 ╚═══════════════════════╩══════════════════════════════════╝
 
 Output saved to: qa-output/issue-pipeline/[KEY]/refined-story.md
-
-Re-run the pipeline to validate: /issue-pipeline [KEY]
 ```
+
+Then ask:
+> "Would you like me to re-run the full pipeline now to verify the refined story passes DoR and generate the enriched ACs, risk matrix, and test cases? Reply **yes** to run `/issue-pipeline [KEY]` automatically."
+
+If the user confirms, run the issue-pipeline skill for the same ticket key. This closes the loop and confirms whether all blocking findings were resolved.
 
 ## Guiding principles
 

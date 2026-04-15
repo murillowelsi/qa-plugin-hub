@@ -143,6 +143,143 @@ plugins/qa-issue-pipeline/
   └───────────┘
 ```
 
+### Complete flow diagram
+
+```
+                    QA ISSUE PIPELINE - COMPLETE FLOW
+                    ==================================
+
+                         +------------------+
+                         |   Jira Ticket    |
+                         |      (KEY)       |
+                         +--------+---------+
+                                  |
+                                  v
+                         +------------------+
+                         | Issue Type Guard |
+                         +--------+---------+
+                                  |
+               +------------------+------------------+
+               |                                     |
+           NOT OK                                   OK
+               |                             Story / Bug / Task
+               v                                     |
+   +-----------------------+                         v
+   | Type Violation        |              +---------------------+
+   |                       |              |   [1/6] ANALYSIS    |
+   | Spike  --> Task       |              |                     |
+   | Subtask-> Parent      |              | 8 ISTQB dimensions  |
+   | Epic   -> Stories     |              | Score: 0-10         |
+   | Other  -> nearest     |              | 01-analysis.md      |
+   +-----------------------+              +----------+----------+
+                                                     |
+                                                     v
+                                          +---------------------+
+                                          |   [2/6] DoR GATE    |
+                                          |                     |
+                                          | score >= 7?         |
+                                          | zero CRITICALs?     |
+                                          | >= 2 ACs?           |
+                                          | estimable?          |
+                                          | clear description?  |
+                                          | work item struct?   |
+                                          +----------+----------+
+                                                     |
+                              +----------------------+----------------------+
+                              |                                             |
+                            BLOCK                                         PASS
+                              |                                             |
+                              v                                             v
+              +-------------------------------+               +------------------------+
+              | Structural issue?             |               | Post checkmark to Jira |
+              |                               |               +------------+-----------+
+              |  YES --> /ticket-splitter     |                            |
+              |                               |                            v
+              |  NO  --> /issue-refiner       |          +-----------------+-----------------+
+              |          (offer inline)       |          |     [3+4/6] PARALLEL AGENTS       |
+              |               |               |          |                                   |
+              |          Jira updated?        |          |  Agent A              Agent B     |
+              |               |               |          |  AC ENRICHMENT        RISK SCORE  |
+              |          restart pipeline?    |          |                                   |
+              |               |               |          |  Given/When/Then      L x I score |
+              +---------------+---------------+          |  + negative path      HIGH >= 15  |
+                        restart ^                        |  + edge cases         MED  8-14   |
+                                |                        |                       LOW  <= 7   |
+                                |                        |  02-enriched-ac.md    03-risk-    |
+                                |                        |                         matrix.md |
+                                |                        +--------+----------+---------------+
+                                |                                 |          |
+                                |                                 +----+-----+
+                                |                                      |
+                                |                                      v
+                                |                        +---------------------+
+                                |                        | [5/6] TEST CASES    |
+                                |                        |                     |
+                                |                        | Ordered by risk:    |
+                                |                        | HIGH --> MED --> LOW|
+                                |                        |                     |
+                                |                        | Positive / Negative |
+                                |                        | Boundary / Edge     |
+                                |                        |                     |
+                                |                        | 04-test-cases.md    |
+                                |                        +----------+----------+
+                                |                                   |
+                                |                                   v
+                                |                        +---------------------+
+                                |                        | [6/6] REPORT        |
+                                |                        |                     |
+                                |                        | 05-pipeline-        |
+                                |                        |   report.md         |
+                                |                        | Jira comment        |
+                                |                        | (user approves)     |
+                                |                        +----------+----------+
+                                |                                   |
+                                |                                   v
+                                |                        +---------------------+
+                                |                        | PIPELINE COMPLETE   |
+                                |                        |                     |
+                                |                        | qa-output/          |
+                                |                        | issue-pipeline/KEY/ |
+                                |                        |   01-analysis.md    |
+                                |                        |   02-enriched-ac.md |
+                                |                        |   03-risk-matrix.md |
+                                |                        |   04-test-cases.md  |
+                                |                        |   05-pipeline-      |
+                                |                        |      report.md      |
+                                |                        |   dor-verdict.json  |
+                                |                        |   refined-story.md  |
+                                |                        +---------------------+
+                                |
+                       offer to restart
+                       after refiner
+
+
+    ======================= STANDALONE SKILLS ===========================
+
+    +------------------+   +------------------+   +--------------------+
+    | /bug-reporter    |   | /ticket-splitter  |   | /sprint-quality-   |
+    |                  |   |                  |   |       gate         |
+    | Free text or     |   | Too large?       |   |                    |
+    | Jira key         |   | Multi-deliverable|   | Sprint name/ID     |
+    |       |          |   | Tech-layer frag? |   |        |           |
+    |       v          |   |        |         |   |        v           |
+    | Production?      |   |        v         |   | All tickets in     |
+    | Yes --> Bug      |   | Split proposal   |   | sprint, parallel:  |
+    | No  --> Task     |   | User approves    |   |                    |
+    |       |          |   | Create in Jira   |   | Story    --> full  |
+    |       v          |   |                  |   |            pipeline|
+    | Structured       |   +------------------+   | Bug/Task --> QA    |
+    | report           |                          |             check  |
+    | Post to Jira     |                          | Other    --> type  |
+    +------------------+                          |           violation|
+                                                  |        |           |
+                                                  |        v           |
+                                                  | sprint-report.md   |
+                                                  | + per-ticket Jira  |
+                                                  |   comments         |
+                                                  +--------------------+
+```
+
 ### Output files
 
 Each pipeline run produces a folder per ticket:

@@ -14,25 +14,40 @@ description: >
   Trigger on: "check sprint N", "run quality gate on sprint", "analyze sprint N",
   "is sprint N ready", "run the pipeline on all sprint tickets", "sprint quality check",
   "sprint readiness report".
-allowed-tools: Read, Write, mcp__*__searchJiraIssuesUsingJql, mcp__*__getJiraIssue, mcp__*__addCommentToJiraIssue
+allowed-tools: Read, Write, mcp__*__searchJiraIssuesUsingJql, mcp__*__getJiraIssue, mcp__*__addCommentToJiraIssue, mcp__*__getConfluencePage, mcp__*__getJiraIssueRemoteIssueLinks
 ---
 
 # Sprint Quality Gate
 
 Run the full QA pipeline across every ticket in a sprint simultaneously, then consolidate results into a sprint readiness report.
 
-## Step 1 — Get the sprint number
+## Step 1 — Get the sprint identifier
 
-If the sprint number was not provided, ask for it now. Do not proceed without it.
+If a sprint was not specified, ask the user:
+> "Which sprint should I check? Please provide the sprint **name** (as it appears in Jira, e.g. `"Sprint 12"`) or the sprint **ID** (a number from the Jira URL)."
+
+Accept either form. If unsure which was provided, treat it as a name first (quoted), then fall back to unquoted if the query returns no results.
 
 ---
 
 ## Step 2 — Fetch sprint tickets
 
-Search Jira using:
+Search Jira using (substitute `<SPRINT>` with the exact name in quotes, or the numeric ID unquoted):
 ```
-sprint = <sprint_number> AND issueType in (Story, Epic, Bug, Task, Spike, "Sub-task")
+sprint = "<SPRINT_NAME>"  -- use this form for named sprints
+sprint = <SPRINT_ID>      -- use this form for numeric IDs
 ```
+
+Full query:
+```
+sprint = "<SPRINT>" AND issueType in (Story, Epic, Bug, Task, Spike, "Sub-task")
+```
+
+If the query returns zero results and the user provided a name, try without quotes. If still empty, list open sprints to help the user identify the correct one:
+```
+sprint in openSprints()
+```
+Show the results and ask the user to confirm the sprint name.
 
 Retrieve for each ticket: `key`, `summary`, `issuetype`, `status`, `assignee`, `priority`.
 

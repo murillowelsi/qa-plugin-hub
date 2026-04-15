@@ -174,13 +174,16 @@ Show the formatted comment and ask: "Approve to post this to Jira, or reply **sk
 
 **If BLOCK — stop the pipeline here after the user responds.** Report:
 > `[2/6] DoR Gate — 🚫 BLOCKED`
-> "The story did not meet the Definition of Ready."
-> "Run `/issue-refiner [KEY]` to automatically rewrite and fix all findings, then re-run `/issue-pipeline [KEY]`."
 
-If the block includes a failing **Work item structure** rule:
-> "This ticket has structural issues. Run `/ticket-splitter [KEY]` to get a concrete proposal for how to split or reorganise it before refining."
+If the block includes a failing **Work item structure** rule, show:
+> "This ticket has structural issues. Run `/ticket-splitter [KEY]` first to get a concrete split/reorganise proposal, then refine."
 
-Show the failing rules and stop.
+Otherwise show the failing rules and ask:
+> "The story did not meet the Definition of Ready. Would you like me to run the **issue-refiner** now to rewrite and fix all findings automatically? Reply **yes** to start, or **no** to handle it manually."
+
+If the user confirms, run the issue-refiner skill inline for the same key. After the refiner completes and the user has approved the Jira update, ask:
+> "Refinement applied. Run `/issue-pipeline [KEY]` again to re-validate and continue from the top, or reply **restart** and I'll restart the pipeline now."
+If the user replies "restart", go back to Step 0 and re-run the full pipeline for the same key.
 
 **If PASS:** Report: `[2/6] DoR Gate — ✅ PASS (Jira updated)`
 
@@ -255,8 +258,8 @@ Save to qa-output/issue-pipeline/<KEY>/03-risk-matrix.md using this structure:
 
 Wait for both agents to complete, then read both output files before continuing.
 
-Report: `[3/6] AC Enrichment — ✅ done (X scenarios: X positive, X negative, X edge)`
-Report: `[4/6] Risk Scoring — ✅ done (X HIGH, X MEDIUM, X LOW)`
+Report a single completion line once both are done:
+> `[3+4/6] AC Enrichment + Risk Scoring — ✅ done (X scenarios: X positive, X negative, X edge | X HIGH, X MEDIUM, X LOW risk areas)`
 
 ---
 
@@ -312,8 +315,7 @@ Save to `qa-output/issue-pipeline/<KEY>/05-pipeline-report.md`:
 |---|---|---|
 | Story Analysis | ✅ Done | Score: X/10 — [verdict] |
 | DoR Gate | ✅ PASS | All rules met |
-| AC Enrichment | ✅ Done | X scenarios (X pos, X neg, X edge) |
-| Risk Scoring | ✅ Done | X HIGH, X MEDIUM, X LOW |
+| AC Enrichment + Risk | ✅ Done | X scenarios (X pos, X neg, X edge) · X HIGH, X MEDIUM, X LOW |
 | Test Cases | ✅ Done | X cases generated |
 
 ## Top Risk Areas
@@ -363,8 +365,7 @@ Display the full pipeline summary table:
 ╠══════════════╬═══════════════╬══════════════════════════╣
 ║ Analysis     ║ ✅ Done       ║ Score: X/10 — [verdict]  ║
 ║ DoR Gate     ║ ✅ PASS       ║ Jira notified            ║
-║ AC Enrichment║ ✅ Done       ║ X scenarios              ║
-║ Risk Scoring ║ ✅ Done       ║ X HIGH / X MED / X LOW   ║
+║ AC + Risk    ║ ✅ Done       ║ X scenarios / X HIGH     ║
 ║ Test Cases   ║ ✅ Done       ║ X cases                  ║
 ║ Report       ║ ✅ Done       ║ Jira notified            ║
 ╚══════════════╩═══════════════╩══════════════════════════╝

@@ -25,8 +25,13 @@ If the user has not provided a Jira ticket key, ask for one now.
 
 Look for `qa-output/issue-pipeline/<KEY>/dor-verdict.json`.
 
-- If verdict is `"BLOCK"`: warn the user the story was blocked at DoR, but offer to proceed if they confirm.
-- If the file does not exist: inform the user the DoR gate hasn't been run, suggest `/dor-gatekeeper [KEY]` first — but offer to proceed directly if they prefer.
+- **If verdict is `"BLOCK"`**: stop here and tell the user:
+  > "⚠️ Story [KEY] was blocked at the DoR gate. Enriching ACs now would likely be wasted work — the story may be rewritten after the blocking issues are fixed. Run `/issue-refiner [KEY]` to fix the story first, then re-run `/dor-gatekeeper [KEY]` to clear it, and come back here."
+  Do not proceed without explicit user confirmation (e.g. "proceed anyway", "I know, continue").
+
+- **If the file does not exist**: stop and tell the user:
+  > "ℹ️ The DoR gate hasn't been run for [KEY] yet. Run `/dor-gatekeeper [KEY]` first to confirm the story is ready before enriching its ACs. You can also run `/issue-pipeline [KEY]` to do the full sequence automatically."
+  Do not proceed without explicit user confirmation (e.g. "skip it", "proceed anyway").
 
 ## Step 3 — Fetch the story
 
