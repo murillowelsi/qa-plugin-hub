@@ -28,6 +28,32 @@ Also fetch the following when available — they are needed for dimension #8:
 - **Subtasks**: if this ticket has subtasks, fetch them to verify they represent implementation steps, not independently valuable deliverables.
 - **Siblings**: if a parent exists, fetch its other children to detect technical-layer fragmentation (e.g., multiple sibling tasks for FE/BE/API/tests that should be subtasks of a shared story).
 
+## Step 2.5 — Issue Type Guard
+
+Check the `issuetype` field from the fetched ticket. Only **User Story**, **Bug**, and **Task** are permitted.
+
+If the type is anything else, do not run the full analysis. Instead, read the ticket's title and description to understand its nature, then produce a reclassification recommendation:
+
+**Reclassification logic:**
+- **Spike** → almost always should be a **Task** (investigation work is internal, non-user-facing, pre-production)
+- **Sub-task** → flag the parent story for analysis instead; the sub-task itself should not be independently analyzed
+- **Epic** → should be decomposed into **User Stories** before entering the pipeline
+- **Any other type** → recommend the closest match (Story, Bug, or Task) based on the content
+
+Respond with:
+
+> "**Issue Type Violation — [KEY]: [Title]**
+>
+> Current type: **[Type]** — this is not a permitted issue type.
+> Only **User Story**, **Bug**, and **Task** are allowed in this pipeline.
+>
+> **Recommended reclassification: [Suggested type]**
+> Reason: [1–2 sentences explaining why, based on the ticket's actual content]
+>
+> To proceed: change the issue type in Jira to [Suggested type], then re-run this skill."
+
+Stop here. Do not score, analyze dimensions, or save any output files for unsupported types.
+
 ## Step 3 — Analyze
 
 Evaluate the story across every dimension below. For each one, assign a severity rating:
@@ -66,8 +92,9 @@ Can you derive test cases directly from the ACs without guessing? Are there impl
 Missing pieces: no ACs, no description, no story points, no linked designs or specs?
 
 **7. Issue Type Correctness**
-Only three issue types are permitted: **User Story**, **Bug**, and **Task**. Flag as HIGH if any other type is used.
+Only three issue types are permitted: **User Story**, **Bug**, and **Task**. Any other type is rejected by the Issue Type Guard in Step 2.5 before analysis ever begins — this dimension is only reached by supported types.
 
+Within supported types, verify correct classification:
 - **User Story** — represents new or modified functionality that directly impacts the user
 - **Bug** — use **only** when a defect is identified in **production** and requires resolution. If the defect was found in an earlier stage (development, testing, or staging), it must be classified as a Task, not a Bug. Flag as HIGH if a Bug ticket describes a pre-production finding.
 - **Task** — use for issues found in pre-production environments (development, testing, staging), and for internal or supporting activities that are not on the roadmap and not directly user-facing

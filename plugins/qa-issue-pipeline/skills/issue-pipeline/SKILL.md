@@ -33,6 +33,30 @@ Report progress after each step using this format:
 
 Fetch the full Jira ticket using the MCP tool. If the story references linked Confluence pages, fetch those too.
 
+**Issue Type Guard**: Check the `issuetype` field. Only **User Story**, **Bug**, and **Task** are permitted.
+
+If the type is anything else, do not run the pipeline. Instead, read the ticket's title and description to understand its nature, then produce a reclassification recommendation:
+
+**Reclassification logic:**
+- **Spike** → almost always should be a **Task** (investigation work is internal, non-user-facing, pre-production)
+- **Sub-task** → flag the parent story for the pipeline instead; sub-tasks are not independently processed
+- **Epic** → decompose into **User Stories** first, then run the pipeline on each story
+- **Any other type** → recommend the closest match (Story, Bug, or Task) based on the content
+
+Respond with:
+
+> "**Issue Type Violation — [KEY]: [Title]**
+>
+> Current type: **[Type]** — this is not a permitted issue type.
+> Only **User Story**, **Bug**, and **Task** are allowed in this pipeline.
+>
+> **Recommended reclassification: [Suggested type]**
+> Reason: [1–2 sentences explaining why, based on the ticket's actual content]
+>
+> To proceed: change the issue type in Jira to [Suggested type], then re-run `/issue-pipeline [KEY]`."
+
+Stop here — do not continue to analysis or any subsequent pipeline steps for unsupported types.
+
 Evaluate the story across every dimension below. Assign a severity rating to each:
 - **CRITICAL** — must be fixed before any work begins
 - **HIGH** — significant quality gap, likely to cause rework
@@ -48,7 +72,7 @@ Evaluate the story across every dimension below. Assign a severity rating to eac
 4. **Acceptance Criteria Quality** — specific, measurable, unambiguous; covers main path; no obvious gaps
 5. **Testability** — test cases derivable directly from ACs without guessing
 6. **Completeness** — no missing ACs, description, story points, or linked designs
-7. **Issue Type Correctness** — only **User Story**, **Bug**, and **Task** are permitted; flag as HIGH if any other type is used
+7. **Issue Type Correctness** — only **User Story**, **Bug**, and **Task** are permitted. Any other type is rejected by the Issue Type Guard at the top of this step before analysis begins. Within supported types, verify correct classification:
    - **User Story**: new or modified functionality that directly impacts the user
    - **Bug**: use **only** for defects found in **production**. If the defect was found in development, testing, or staging, it must be a Task — flag as HIGH if misclassified
    - **Task**: issues from pre-production environments, or internal/supporting activities not on the roadmap and not directly user-facing

@@ -39,6 +39,32 @@ Fetch the full ticket using the Jira MCP tool. Extract:
 - Story points (if set)
 - Any linked issues or attachments
 
+## Step 3.5 — Issue Type Guard
+
+Check the `issuetype` field from the fetched ticket. Only **User Story**, **Bug**, and **Task** are permitted.
+
+If the type is anything else, do not rewrite the ticket. Instead, read the title and description to understand its nature, then produce a reclassification recommendation:
+
+**Reclassification logic:**
+- **Spike** → almost always should be a **Task** (investigation work is internal, non-user-facing, pre-production)
+- **Sub-task** → flag the parent story for refinement instead; sub-tasks are not independently refined
+- **Epic** → should be decomposed into **User Stories** first, then each story refined individually
+- **Any other type** → recommend the closest match (Story, Bug, or Task) based on the content
+
+Respond with:
+
+> "**Issue Type Violation — [KEY]: [Title]**
+>
+> Current type: **[Type]** — this is not a permitted issue type.
+> Only **User Story**, **Bug**, and **Task** are allowed in this pipeline.
+>
+> **Recommended reclassification: [Suggested type]**
+> Reason: [1–2 sentences explaining why, based on the ticket's actual content]
+>
+> To proceed: change the issue type in Jira to [Suggested type], then re-run `/issue-refiner [KEY]`."
+
+Stop here. Do not rewrite, save files, or update Jira for unsupported types.
+
 ## Step 4 — Rewrite the story
 
 Using the analysis findings and DoR verdict as your guide, produce:

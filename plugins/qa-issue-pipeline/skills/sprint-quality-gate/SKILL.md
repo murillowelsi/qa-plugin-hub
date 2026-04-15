@@ -3,8 +3,11 @@ name: sprint-quality-gate
 description: >
   Checks the quality of every ticket in a Jira sprint by spawning parallel agents —
   one per ticket — then aggregating all results into a sprint readiness report.
-  Stories and Epics get the full 6-step pipeline; Bugs, Tasks, Spikes, and Sub-tasks
-  get a focused quality analysis. Each ticket receives an individual Jira comment.
+  Only User Stories, Bugs, and Tasks are supported. Epics, Spikes, Sub-tasks, and
+  other types are flagged as type violations with a reclassification recommendation
+  posted as a Jira comment — they do not receive a quality score.
+  Stories get the full 6-step pipeline; Bugs and Tasks get a focused quality analysis.
+  Each ticket receives an individual Jira comment.
   Use this skill whenever the user provides a sprint number and wants to check sprint
   quality, assess sprint readiness before it starts, run the pipeline across an entire
   sprint, or see which tickets are ready versus blocked.
@@ -33,12 +36,16 @@ sprint = <sprint_number> AND issueType in (Story, Epic, Bug, Task, Spike, "Sub-t
 
 Retrieve for each ticket: `key`, `summary`, `issuetype`, `status`, `assignee`, `priority`.
 
-Display a confirmation table before proceeding:
+Partition results into two groups before proceeding:
+- **Supported**: Story, Bug, Task — these will be processed by agents
+- **Unsupported**: Spike, Sub-task, Epic, and any other types — these will receive a type violation flag instead of a quality analysis
+
+Display a confirmation table for all tickets (both groups):
 
 | Key | Type | Summary | Status |
 |-----|------|---------|--------|
 
-Then say: "Found X tickets in Sprint N. Starting parallel quality gate — running all tickets simultaneously..."
+Then say: "Found X tickets in Sprint N (Y supported, Z flagged as unsupported type). Starting parallel quality gate..."
 
 ---
 
@@ -47,13 +54,26 @@ Then say: "Found X tickets in Sprint N. Starting parallel quality gate — runni
 In a **single message**, use the Agent tool to spawn one subagent per ticket. All agents start at the same time — never wait for one to finish before spawning the others.
 
 **Routing by issue type:**
-- Story or Epic → `subagent_type: "ticket-pipeline-worker"`
-- Bug, Task, Spike, or Sub-task → `subagent_type: "ticket-quality-checker"`
+- Story → `subagent_type: "ticket-pipeline-worker"`
+- Bug or Task → `subagent_type: "ticket-quality-checker"`
+- Spike, Sub-task, Epic, or any other unsupported type → `subagent_type: "ticket-quality-checker"`
 
-**Prompt template for each agent:**
+**Prompt template for supported types (Story, Bug, Task):**
 ```
 Ticket key: <KEY>
 Issue type: <TYPE>
+```
+
+**Prompt template for unsupported types:**
+```
+Ticket key: <KEY>
+Issue type: <TYPE>
+
+This ticket has an unsupported issue type. Fetch the ticket, read its title and description, then:
+1. Flag the type violation clearly
+2. Recommend the correct type (User Story, Bug, or Task) based on the content, with a 1–2 sentence rationale
+3. Post a Jira comment with the violation and recommendation
+4. Return the JSON summary with score: 0, status: "BLOCK", top_issues: ["Issue type '[TYPE]' is not permitted — recommend reclassifying as [suggested type]"]
 ```
 
 ---
